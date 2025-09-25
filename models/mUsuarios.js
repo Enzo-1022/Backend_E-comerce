@@ -1,0 +1,44 @@
+// const BD = require('../config/BD');
+
+import sequelize from '../config/BD.js';
+
+// const { DataTypes } = require('sequelize');
+
+import { DataTypes } from 'sequelize';
+
+const Usuarios = sequelize.define(
+    'Usuarios',
+    {
+        Id_Usuario : {
+            type: DataTypes.INTEGER,
+            primaryKey : true,
+            autoIncrement : true,
+        },
+
+        Nome: {
+            type : DataTypes.STRING,
+            allowNull : false 
+        },
+
+        Data_Nascimento : {
+            type : DataTypes.DATEONLY,
+            allowNull : false
+        },
+
+        Cpf : {
+            type : DataTypes.STRING,
+            allowNull : false
+        }
+
+    },
+    {
+        timestamps : false,
+        freezeTableName : true
+    }
+);
+
+// module.exports = Usuarios;
+// console.log(await Usuarios.sync())
+
+export default Usuarios;
+ 
