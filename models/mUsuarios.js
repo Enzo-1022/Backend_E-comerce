@@ -1,8 +1,4 @@
-// const BD = require('../config/BD');
-
 import sequelize from '../config/BD.js';
-
-// const { DataTypes } = require('sequelize');
 
 import { DataTypes } from 'sequelize';
 
@@ -37,7 +33,6 @@ const Usuarios = sequelize.define(
     }
 );
 
-// module.exports = Usuarios;
 // console.log(await Usuarios.sync())
 
 export default Usuarios;

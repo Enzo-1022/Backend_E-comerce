@@ -1,16 +1,16 @@
-// Importações das Libs usadas
-var express = require('express');
-var path = require('path'); // Importando a lib path para trabalharmos com os arquivos
-var cookieParser = require('cookie-parser'); // essa Lib é usada para preencher os headers das requisições automaticamente
-var logger = require('morgan'); // Não sei
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan'
 
-var cors = require('cors'); // Ultilizamos o cors para permitir solicitações de outros "URLS" para nosso servidor
+import cors from 'cors';
 
-// Importando as rotas
-var indexRouter = require('./routes/index');
-var usuariosRouter = require('./routes/usuarios');
-var loginRouter = require('./routes/login');
-var adminRouter = require('./routes/admin');
+import usuarios from './routes/usuarios.js';
+import indexRouter from './routes/index.js';
+import loginRouter from './routes/login.js';
+import adminRouter from './routes/admin.js';
+
+// const __dirname = path.dirname(__filename);
 
 // Instaciando o objeto express  para setarmos as rotas e os midlewares, dps o exportamos para o arquivo bin/www nele é aonde o server é configurado e ligado
 var app = express();
@@ -26,12 +26,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 // Rotas
 app.use('/', indexRouter);
-app.use('/Usuarios', usuariosRouter);
+app.use('/Usuarios', usuarios);
 app.use('/Login', loginRouter);
 app.use('/Admin', adminRouter);
 
-module.exports = app; // Exportando a instancia do app
+// module.exports = app; // Exportando a instancia do app
+
+export default app;

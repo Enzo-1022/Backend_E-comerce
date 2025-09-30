@@ -1,6 +1,6 @@
 import mProdutos from '../models/mProdutos.js';
 
-export async function catalogo (req, res, next) {
+export default async function catalogo (req, res, next) {
     try 
     {
         const Catalogo = JSON.parse(JSON.stringify( // Conversão para objeto js

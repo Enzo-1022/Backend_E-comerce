@@ -1,9 +1,9 @@
-var express = require('express');
+import { Router } from 'express';
 
-var router = express.Router();
+var router = Router();
 
-var controllerAdmin = require('../controllers/controllerAdmin');
+import { cadastroProdutos } from '../controllers/controllerAdmin.js';
 
-router.post('/CadastroProduto', controllerAdmin.cadastroProdutos);
+router.post('/CadastroProduto', cadastroProdutos);
 
-module.exports = router;
+export default router;

@@ -1,8 +1,4 @@
-// const { DataTypes } = require('sequelize');
-
 import { DataTypes } from 'sequelize';
-
-// const BD = require('../config/BD');
 
 import sequelize from '../config/BD.js'
 

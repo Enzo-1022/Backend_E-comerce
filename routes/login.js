@@ -1,11 +1,15 @@
-var express = require('express');
-
+// var express = require('express');
+import express from 'express';
 var router = express.Router();
 
-var controllerLogin = require('../controllers/controllerLogin');
+// var controllerLogin = require('../controllers/controllerLogin');
 
-router.post('/', controllerLogin.Login);
+import {Login, Cadastro} from '../controllers/controllerLogin.js'
 
-router.post('/Cadastro', controllerLogin.Cadastro);
+router.post('/', Login);
 
-module.exports = router;
+router.post('/Cadastro', Cadastro);
+
+// module.exports = router;
+
+export default router;
