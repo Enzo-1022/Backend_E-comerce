@@ -37,8 +37,6 @@ const Produtos = sequelize.define(
     }
 );
 
-// module.exports = Produtos;
-
 // console.log(await Produtos.sync());
 
 export default Produtos;

@@ -43,6 +43,6 @@ const Cartoes = sequelize.define(
     }
 );
 
-// console.log(await Cartoes.sync());
+// await Cartoes.sync();
 
 export default Cartoes;

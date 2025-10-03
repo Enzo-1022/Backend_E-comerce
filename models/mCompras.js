@@ -53,6 +53,6 @@ const Compras = sequelize.define(
     }
 );
 
-// console.log(await Compras.sync());
+// await Compras.sync();
 
 export default Compras;

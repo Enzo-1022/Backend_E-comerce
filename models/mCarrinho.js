@@ -20,7 +20,7 @@ const Carrinho = sequelize.define(
             allowNull : false,
             references : {
                 model : Usuarios,
-                key : "Id_Usuario"
+                key : 'Id_Usuario'
             }
         },
 

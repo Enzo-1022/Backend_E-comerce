@@ -7,12 +7,12 @@ const sequelize = new Sequelize('ecomerce2', process.env.UserBD, process.env.Dat
     dialect : 'mysql'
 });
 
-try {
-    await sequelize.authenticate();
+// try {
+//     await sequelize.authenticate();
 
-    console.log('Deu certo!')
-} catch (error) {
-    console.log(error)
-}
+//     console.log('Deu certo!')
+// } catch (error) {
+//     console.log(error)
+// }
 
 export default sequelize;

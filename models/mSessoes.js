@@ -30,6 +30,6 @@ const Sessoes = sequelize.define(
     }
 );
 
-// console.log(await Sessoes.sync());
+// await Sessoes.sync();
 
 export default Sessoes;
