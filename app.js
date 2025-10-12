@@ -34,6 +34,4 @@ app.use('/Usuarios', usuarios);
 app.use('/Login', loginRouter);
 app.use('/Admin', adminRouter);
 
-// module.exports = app; // Exportando a instancia do app
-
 export default app;

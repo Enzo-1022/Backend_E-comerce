@@ -100,7 +100,7 @@ export const Login = [
                     }
                 })));
 
-                if (!login.length) // Se a variavel login for uma array vazia significa que nõa existe um usuario cadastrado com aquele email e logo entra no if e retorna a resposta a requisição com o status 401 não autorizado
+                if (!login.length) // Se a variavel login for uma array vazia significa que não existe um usuario cadastrado com aquele email e logo entra no if e retorna a resposta a requisição com o status 401 não autorizado
                 {
                     return res.status(401).json({
                         Erro : "Não Autorizado! Email não cadastrado!"

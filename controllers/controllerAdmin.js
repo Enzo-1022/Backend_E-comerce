@@ -18,15 +18,9 @@ export const cadastroProdutos = [
 
             if (!errors.isEmpty()) /* Verificamos se existe algum erro na validação dos dados dos inputs */
             {
-                res.json( /* Caso tenha, respondemos á requisição com o erro */
+                return res.stauts(400).json( /* Caso tenha, respondemos á requisição com o erro */
                     {
-                        sucesso : false,
-                        message : errors,
-                        erro : {
-                            status : true,
-                            title : 'Erro na validação de dados',
-                            message : `${errors}`
-                        }
+                        Erro: "Dados Invalidos!"
                     }
                 );    
             }
@@ -41,15 +35,9 @@ export const cadastroProdutos = [
                     }
                 );
 
-               res.json( /* Enviando a resposta positiva á requisição */
+               res.status(201).json( /* Enviando a resposta positiva á requisição */
                     {
-                        sucesso : true,
-                        mesage : "Produto Cadastrado Com Sucesso!",
-                        erro : {
-                            status : false,
-                            title : null,
-                            message : null
-                        }
+                        IdProduto: addProduto
                     }
                 )
             }
@@ -57,15 +45,9 @@ export const cadastroProdutos = [
         catch (error) 
         {
             console.error(error)
-            res.json( /* Caso algum erro aconteça responderemos á requisação com o erro */
+            res.status(500).json( /* Caso algum erro aconteça responderemos á requisação com o erro */
                 {
-                    sucesso : false,
-                    message : error,
-                    erro : {
-                        status : true,
-                        title : "Erro",
-                        message : `Um erro inesperado aconteceu! <br/> ${error}`
-                    }
+                    Erro : `Erro Interno do Servidor! ${error}`
                 }
             );
         }
