@@ -11,7 +11,7 @@ export const cadastroProdutos = [
     body('Descricao').trim().escape().notEmpty(),
     body('Preco').trim().escape().notEmpty(),
 
-    async ( req, res, next ) => {
+    async ( req, res ) => {
         try 
         {
             let errors = validationResult(req); /* Aqui temos o resultado da validação dos dados dos inputs */

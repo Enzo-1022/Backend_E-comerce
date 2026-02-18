@@ -22,10 +22,15 @@ export default async function middlewareSessao(req, res, next) {
         } 
       });
 
+      // Validar se no método jwt.verify ja tem a verificação de expiração por time/hora
+
       if (!Sessao.length) 
       {
         return res.status(401).json({Erro : "Não autorizado! Token Invalido!"});
       }
+
+      // add o user id a requisição para caso algum middleware subsequente precise
+      req.userID = VerificacaoToken.Id_Usuario;
 
       next();
     }

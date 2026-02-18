@@ -4,7 +4,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.json({Erro : "Eu venci!"})
+  res.json({ACERTO : "Eu venci!"})
 });
 
 export default router;

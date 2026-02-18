@@ -1,6 +1,62 @@
 import mProdutos from '../models/mProdutos.js';
+import { validationResult, body } from 'express-validator';
+import mUsuarios from '../models/mUsuarios.js';
+import Usuarios from '../models/mUsuarios.js';
+import { where } from 'sequelize';
 
-export default async function catalogo (req, res, next) {
+export async function perfilUsuario (req, res) { // Falta Testar, Feito dia 17/02/2026
+    // Callback que retorna as informações do usuario
+    try {
+        var user = JSON.parse(JSON.stringify(
+            await mUsuarios.findByPk(req.userID) // aqui ultilizamos uma técnica que aprendi recentemente que é a gravação de nova infos dentro do 
+        ));
+
+        if(!user[0].length){
+            return res.status(400).json({Erro: `Usuario não encontrado!`})
+        }
+
+        return res.status(200).json({PerfilUsuario: user})
+    
+    } catch (error) {
+        return res.status(500).json({Erro: `Erro Interno do Servidor! ${error}`});
+    }
+}
+
+export const AttInfosUsuario = [
+    body('Cpf').trim().escape().notEmpty(),
+    body('Data_Nascimento').trim().escape().notEmpty(),
+    body('Nome').trim().escape().notEmpty(),
+
+    (req, res) => {
+        try {
+            var errors = validationResult(req)
+
+            if(!errors.isEmpty())
+            {
+                return res.status(400).json(`Má requisição, ${errors}`);   
+            }
+
+            // Parei aqui falta adicionar a funcionalidade de atualização do registro
+            var attUsuario = Usuarios.update(
+                {
+                    Nome : req.body.Nome,
+                    Data_Nascimento : req.body.Data_Nascimento,
+                    Cpf : req.body.Cpf
+                },
+                {
+                    where : {
+                        Id_Usuario : req.userID
+                    }
+                }
+            )
+            // Falta Terminar e Validar 18/02/2026.
+        } catch (error) {
+            return res.status(500).json({Erro: `Erro interno do servidor! ${error}`})
+        }
+    }
+]
+
+export async function catalogo (req, res) {
     try 
     {
         const Catalogo = JSON.parse(JSON.stringify( // Conversão para objeto js

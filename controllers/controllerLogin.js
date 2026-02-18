@@ -23,7 +23,7 @@ export const Cadastro = [ // Callback para cadastrar um novo usuario
     body('Data_Nascimento').trim().escape().notEmpty(),
     body('Nome').trim().escape().notEmpty(),
 
-    async (req, res, next) => {
+    async (req, res) => {
 
         try {
             var errors = validationResult(req);
@@ -74,7 +74,7 @@ export const Login = [
     body('Email').trim().escape().notEmpty(),
     body('Senha').trim().escape().notEmpty(),
 
-    async (req, res, next) => {
+    async (req, res) => {
         try {
             var errors = validationResult(req);
 
@@ -106,7 +106,7 @@ export const Login = [
                         Erro : "Não Autorizado! Email não cadastrado!"
                     });
                 }
-                else if (login[0].Senha !== req.body.Senha) // se o emial for valido ele verifica para saber se a senha digitada está igual a cadastrada, se for diferente ele envia a resposta a requisição com um status de 401 não autorizado.
+                else if (login[0].Senha !== req.body.Senha) // se o email for valido ele verifica para saber se a senha digitada está igual a cadastrada, se for diferente ele envia a resposta a requisição com um status de 401 não autorizado.
                 {
                     return res.status(401).json({
                         Erro : "Não Autorizado! Senha incorreta!"
