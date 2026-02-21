@@ -34,11 +34,11 @@ export const Cadastro = [ // Callback para cadastrar um novo usuario
             } 
             else 
             {
-                const verificaUsuExistemte = JSON.parse(JSON.stringify(await Logins.findAll({
+                const verificaUsuExistente = JSON.parse(JSON.stringify(await Logins.findAll({
                     where : { Email : req.body.Email }
                 })));
 
-                if (verificaUsuExistemte.length) {
+                if (verificaUsuExistente.length) {
                     return res.status(409).json({Erro : "Conflito! um mesmo usuario já cadastrado com o mesmo email."})
                 }
                 else
