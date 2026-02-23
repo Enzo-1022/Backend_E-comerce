@@ -21,12 +21,13 @@ export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/20
     }
 }
 
-export const AttInfosUsuario = [
+export const AttInfosUsuario = [ // Validar
+
     body('Cpf').trim().escape().notEmpty(),
     body('Data_Nascimento').trim().escape().notEmpty(),
     body('Nome').trim().escape().notEmpty(),
 
-    (req, res) => {
+    async (req, res) => {
         try {
             var errors = validationResult(req)
 
@@ -35,8 +36,8 @@ export const AttInfosUsuario = [
                 return res.status(400).json(`Má requisição, ${errors}`);   
             }
 
-            // Parei aqui falta adicionar a funcionalidade de atualização do registro
-            var attUsuario = Usuarios.update(
+            // Validar como o Sequelize nos traz os erros para add um tratamento para esse possiveis erros
+            await Usuarios.update(
                 {
                     Nome : req.body.Nome,
                     Data_Nascimento : req.body.Data_Nascimento,
@@ -47,11 +48,11 @@ export const AttInfosUsuario = [
                         Id_Usuario : req.userID
                     }
                 }
-            )
-
-            console.log(attUsuario)
+            );
             // Falta Terminar e Validar 18/02/2026.
-            res.status(204)
+
+            return res.status(204) // 204 é um código de sucesso mas que não envia nenhum conteudo em seu corpo.
+
         } catch (error) {
             return res.status(500).json({Erro: `Erro interno do servidor! ${error}`})
         }
