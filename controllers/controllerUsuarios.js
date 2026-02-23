@@ -2,16 +2,15 @@ import mProdutos from '../models/mProdutos.js';
 import { validationResult, body } from 'express-validator';
 import mUsuarios from '../models/mUsuarios.js';
 import Usuarios from '../models/mUsuarios.js';
-import { where } from 'sequelize';
 
-export async function perfilUsuario (req, res) { // Falta Testar, Feito dia 17/02/2026
+export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/2026
     // Callback que retorna as informações do usuario
     try {
         var user = JSON.parse(JSON.stringify(
             await mUsuarios.findByPk(req.userID) // aqui ultilizamos uma técnica que aprendi recentemente que é a gravação de nova infos dentro do 
         ));
 
-        if(!user[0].length){
+        if(!user){
             return res.status(400).json({Erro: `Usuario não encontrado!`})
         }
 
@@ -49,7 +48,10 @@ export const AttInfosUsuario = [
                     }
                 }
             )
+
+            console.log(attUsuario)
             // Falta Terminar e Validar 18/02/2026.
+            res.status(204)
         } catch (error) {
             return res.status(500).json({Erro: `Erro interno do servidor! ${error}`})
         }
