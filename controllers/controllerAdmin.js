@@ -24,23 +24,22 @@ export const cadastroProdutos = [
                     }
                 );    
             }
-            else
-            {
-                let addProduto = await mProdutos.create( /* Adicionando Produto ao BD */
-                    {
-                        Nome : req.body.Nome,
-                        Descricao : req.body.Descricao,
-                        Quantidade : req.body.Quantidade,
-                        Preco : req.body.Preco
-                    }
-                );
 
-               res.status(201).json( /* Enviando a resposta positiva á requisição */
-                    {
-                        IdProduto: addProduto
-                    }
-                )
-            }
+            let addProduto = await mProdutos.create( /* Adicionando Produto ao BD */
+                {
+                    Nome : req.body.Nome,
+                    Descricao : req.body.Descricao,
+                    Quantidade : req.body.Quantidade,
+                    Preco : req.body.Preco
+                }
+            );
+
+            return res.status(201).json( /* Enviando a resposta positiva á requisição */
+                {
+                    IdProduto: addProduto
+                }
+            )
+            
         } 
         catch (error) 
         {

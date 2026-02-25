@@ -10,7 +10,7 @@ export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/20
             await mUsuarios.findByPk(req.userID) // aqui ultilizamos uma técnica que aprendi recentemente que é a gravação de nova infos dentro do 
         ));
 
-        if(!user){
+        if(!user){ // Validar realmente se isso está dando certo 
             return res.status(400).json({Erro: `Usuario não encontrado!`})
         }
 
@@ -54,7 +54,7 @@ export const AttInfosUsuario = [ // Validar
             return res.status(204) // 204 é um código de sucesso mas que não envia nenhum conteudo em seu corpo.
 
         } catch (error) {
-            return res.status(500).json({Erro: `Erro interno do servidor! ${error}`})
+            return res.status(500).json({Erro: error});
         }
     }
 ]
@@ -63,7 +63,7 @@ export async function catalogo (req, res) {
     try 
     {
         const Catalogo = JSON.parse(JSON.stringify( // Conversão para objeto js
-            await mProdutos.findAll() // Buscando todos os produtos
+            await mProdutos.findAll() // Buscando todos os produtos, buscar todos os produtos não é uma boa pratica caso possua um numero muito elevado de registros isso interfere diretamente na performance do banco de dados e do backend
         ));
 
         return res.status(200).json( // Respondendo a requisição com o status 200 ok, e enviando os prudutos
