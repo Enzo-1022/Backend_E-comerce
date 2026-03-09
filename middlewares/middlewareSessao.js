@@ -32,7 +32,7 @@ export default async function middlewareSessao(req, res, next) {
     // add o user id a requisição para caso algum middleware subsequente precise
     req.userID = VerificacaoToken.Id_Usuario;
 
-    next();
+    return next();
 
   } catch (error) {
 

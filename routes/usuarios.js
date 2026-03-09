@@ -5,7 +5,7 @@
 import express from 'express'
 var router = express.Router(); // instanciando o objeto router
 
-import {perfilUsuario, catalogo, AttInfosUsuario} from '../controllers/controllerUsuarios.js';
+import {perfilUsuario, catalogo, AttInfosUsuario, desativaUsuario} from '../controllers/controllerUsuarios.js';
 
 import middlewareSessao from '../middlewares/middlewareSessao.js'
 
@@ -22,6 +22,8 @@ router.get('/Catalogo', middlewareSessao, catalogo);
 
 router.get('/Perfil', middlewareSessao, perfilUsuario); // Validar
 
-router.put('/AtualizaDados', middlewareSessao, AttInfosUsuario); // Validar
+router.put('/AtualizarDados', middlewareSessao, AttInfosUsuario); // Validar
+
+router.patch('/DesativarPerfil', middlewareSessao, desativaUsuario); // Validar 
 
 export default router;

@@ -24,6 +24,12 @@ const Usuarios = sequelize.define(
         Cpf : {
             type : DataTypes.STRING,
             allowNull : false
+        },
+
+        Ativo : { // Validar
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
         }
 
     },
