@@ -29,7 +29,7 @@ const Usuarios = sequelize.define(
         Ativo : { // Validar
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: true
+            defaultValue: false // Dps mudar para True
         }
 
     },

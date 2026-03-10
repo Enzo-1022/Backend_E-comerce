@@ -10,11 +10,13 @@ export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/20
             await mUsuarios.findByPk(req.userID) // aqui ultilizamos uma técnica que aprendi recentemente que é a gravação de nova infos dentro da requisição, o middleware consegue gravar novos campos com informações dentro da requisição que são acessiveis apartir dos proximos middleware/callback
         ));
 
+        console.log(user) // Parte da Validação
+
         if(!user){ // Validar realmente se isso está dando certo 
-            return res.status(400).json({Erro: `Usuario não encontrado!`})
+            return res.status(400).json({Erro: `Usuario não encontrado!`});
         }
 
-        return res.status(200).json({PerfilUsuario: user})
+        return res.status(200).json({PerfilUsuario: user});
     
     } catch (error) {
         return res.status(500).json({Erro: `Erro Interno do Servidor! ${error}`});

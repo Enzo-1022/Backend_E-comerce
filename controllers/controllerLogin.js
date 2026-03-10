@@ -15,6 +15,7 @@ import { Hashing } from '../Services/hasing.js'; // Importa
 const SessionPasword = process.env.PasswordSession;
 
 
+// Adicionar uma validação para caso ocorrer erro em alguma função que faça a inserção no banco, apagar oq ja tinha sido inserido e vise e versa.
 export const Cadastro = [ // Callback para cadastrar um novo usuario
     // Função refatotorada e melhorada 16/09/2025
     // Refatorei ja no novo padrao que aprendi sobre api rest, usando os codigos de status http
@@ -46,13 +47,14 @@ export const Cadastro = [ // Callback para cadastrar um novo usuario
             const novoUsuario = await Usuarios.create({
                 Nome : req.body.Nome,
                 Data_Nascimento : req.body.Data_Nascimento,
-                Cpf : req.body.Cpf
+                Cpf : req.body.Cpf,
+                Ativo: true
             });
 
             const novoLogin = await Logins.create({
                 Id_Usuario : novoUsuario.Id_Usuario,
                 Email : req.body.Email,
-                Senha : await Hashing.criandoHash(req.body.Senha), // Validar
+                Senha : await Hashing.criandoHash(req.body.Senha), // Validado
                 Administrador : false
             });
 
@@ -106,7 +108,7 @@ export const Login = [
             //     });
             // }
 
-            if(!Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Validar
+            if(!await Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Validar
                 return res.status(401).json({
                     Erro : "Não Autorizado! Senha incorreta!"
                 });
