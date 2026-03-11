@@ -24,14 +24,7 @@ const Usuarios = sequelize.define(
         Cpf : {
             type : DataTypes.STRING,
             allowNull : false
-        },
-
-        Ativo : { // Validar
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false // Dps mudar para True
         }
-
     },
     {
         timestamps : false,
@@ -39,7 +32,7 @@ const Usuarios = sequelize.define(
     }
 );
 
-// console.log(await Usuarios.sync())
+// console.log(await Usuarios.sync({alter: true}))
 
 export default Usuarios;
  

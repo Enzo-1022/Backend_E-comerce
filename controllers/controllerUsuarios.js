@@ -2,6 +2,7 @@ import mProdutos from '../models/mProdutos.js';
 import { validationResult, body } from 'express-validator';
 import mUsuarios from '../models/mUsuarios.js';
 import mSessoes from '../models/mSessoes.js';
+import mLogins from '../models/mLogins.js'
 
 export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/2026
     // Callback que retorna as informações do usuario
@@ -61,11 +62,11 @@ export const AttInfosUsuario = [ // Validar
     }
 ];
 
-export async function desativaUsuario (req, res) {
+export async function desativaUsuario (req, res) { // Pequena mudanaça na regra pois antes a tabela que continha a informação se o usuario estava ativo era a própria do usuario alterei isso para a tabela de login
     // Aqui a lógica é a seguinte como estou utlizando JWT tokens para validar a sessão do usuario, eu pensei na seguite lógica como existe um midlleware que valida as sessões com base nos registros do banco de dados quando eu desativar o usuario eu apago esse registro e logo ao tentar acessar qualquer url que dependa de estar logado a api retorna o status não autorizado. Como ele não está logado ele não consegue mais acessar essa rota logo não poderá desativar seu perfil ja estando desativado, ja a lógica para reativar o perfil seria implementada no login do usuário quando ele tentasse entrar novamente cairia navalidação para saber se o usuario esta logado ou não n~so estiver irá exibir a opção de reativação que cairá em outra rota.
-    try { // Falta Validar 
-        // feito 09/03/2026, falta validar
-        await mUsuarios.update({ // Atualizando o Status do Usuário para false
+    try { // Falta Validar, 100% Validado dia 11/03/2026
+        // feito 09/03/2026, falta validar, Validado 11/03/2026
+        await mLogins.update({ // Atualizando o Status do Usuário para false
             Ativo: false
         }, {
             where: {

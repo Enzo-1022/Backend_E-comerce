@@ -47,15 +47,15 @@ export const Cadastro = [ // Callback para cadastrar um novo usuario
             const novoUsuario = await Usuarios.create({
                 Nome : req.body.Nome,
                 Data_Nascimento : req.body.Data_Nascimento,
-                Cpf : req.body.Cpf,
-                Ativo: true
+                Cpf : req.body.Cpf
             });
 
             const novoLogin = await Logins.create({
                 Id_Usuario : novoUsuario.Id_Usuario,
                 Email : req.body.Email,
                 Senha : await Hashing.criandoHash(req.body.Senha), // Validado
-                Administrador : false
+                Admin : false,
+                ativo: true
             });
 
             if (!novoUsuario || !novoLogin) {
@@ -100,15 +100,12 @@ export const Login = [
                     Erro : "Não Autorizado! Email não cadastrado!"
                 });
             }
-            
-            // if (login[0].Senha !== req.body.Senha) // se o email for valido ele verifica para saber se a senha digitada está igual a cadastrada, se for diferente ele envia a resposta a requisição com um status de 401 não autorizado.
-            // {
-            //     return res.status(401).json({
-            //         Erro : "Não Autorizado! Senha incorreta!"
-            //     });
-            // }
 
-            if(!await Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Validar
+            if (!login[0].Ativo) { // Validando se o usuário está com a conta ativa
+                return res.status(401).json({Erro : "Não autorizado, Usuario desativado!"})
+            }
+            
+            if(!await Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Validar, Validado
                 return res.status(401).json({
                     Erro : "Não Autorizado! Senha incorreta!"
                 });

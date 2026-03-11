@@ -34,8 +34,16 @@ const Logins = sequelize.define(
 
         Admin : {
             type : DataTypes.BOOLEAN,
-            allowNull : true
+            allowNull : true,
+            defaultValue : false
+        },
+
+        Ativo : { // Validar
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true // Dps mudar para True
         }
+
 
     },
     {
@@ -44,6 +52,6 @@ const Logins = sequelize.define(
     }
 );
 
-// console.log(await Logins.sync());
+// console.log(await Logins.sync({alter: true}));
 
 export default Logins;

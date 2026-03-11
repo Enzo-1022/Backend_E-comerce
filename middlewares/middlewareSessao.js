@@ -35,8 +35,7 @@ export default async function middlewareSessao(req, res, next) {
     return next();
 
   } catch (error) {
-
-    if (error.name == 'TokenExpiredError' && error.name == 'JsonWebTokenError') 
+    if (error.name == 'TokenExpiredError' || error.name == 'JsonWebTokenError') // Antes estava com o sinal de and && e não estava capatando o erro para informar que o token era invalido
     {
       return res.status(401).json({ Erro: "Não Autorizado! Sessão Expirada." });
     }

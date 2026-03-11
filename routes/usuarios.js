@@ -24,6 +24,6 @@ router.get('/Perfil', middlewareSessao, perfilUsuario); // Validar
 
 router.put('/AtualizarDados', middlewareSessao, AttInfosUsuario); // Validar
 
-router.patch('/DesativarPerfil', middlewareSessao, desativaUsuario); // Validar 
+router.patch('/DesativarPerfil', middlewareSessao, desativaUsuario); // Validado 11/03/2026
 
 export default router;
