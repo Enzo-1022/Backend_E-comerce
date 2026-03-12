@@ -86,7 +86,7 @@ export const Login = [
                 });
             }
             
-            var login = JSON.parse(JSON.stringify( // Busca o login do usuario no banco de dados se não houver retorna um array vazio
+            const login = JSON.parse(JSON.stringify( // Busca o login do usuario no banco de dados se não houver retorna um array vazio
                 await Logins.findAll({
                     where : {
                         Email : req.body.Email
@@ -113,7 +113,7 @@ export const Login = [
              
             // se tudo estiver certo o servidor gera um cookie de seção, ainda preciso criar uma tabela  para administrar-mos as seções dos usuarios, preciso criar o middleware para verificar se o id de sessão que iremos passar via cabeçalho authenticator está valido ou não e buscar uma biblioteca para gerar os tokens de sessão.
             
-            var sessaoAtiva = JSON.parse(JSON.stringify( await Sessoes.findAll({ // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
+            const sessaoAtiva = JSON.parse(JSON.stringify( await Sessoes.findAll({ // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
                 where : {
                     Id_Usuario : login[0].Id_Usuario
                 }

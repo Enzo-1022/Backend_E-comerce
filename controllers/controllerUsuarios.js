@@ -2,7 +2,12 @@ import mProdutos from '../models/mProdutos.js';
 import { validationResult, body } from 'express-validator';
 import mUsuarios from '../models/mUsuarios.js';
 import mSessoes from '../models/mSessoes.js';
-import mLogins from '../models/mLogins.js'
+import mLogins from '../models/mLogins.js';
+
+import 'dotenv/config';
+
+
+import jwt from 'jsonwebtoken';
 
 export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/2026
     // Callback que retorna as informações do usuario
@@ -66,15 +71,22 @@ export async function desativaUsuario (req, res) { // Pequena mudanaça na regra
     // Aqui a lógica é a seguinte como estou utlizando JWT tokens para validar a sessão do usuario, eu pensei na seguite lógica como existe um midlleware que valida as sessões com base nos registros do banco de dados quando eu desativar o usuario eu apago esse registro e logo ao tentar acessar qualquer url que dependa de estar logado a api retorna o status não autorizado. Como ele não está logado ele não consegue mais acessar essa rota logo não poderá desativar seu perfil ja estando desativado, ja a lógica para reativar o perfil seria implementada no login do usuário quando ele tentasse entrar novamente cairia navalidação para saber se o usuario esta logado ou não n~so estiver irá exibir a opção de reativação que cairá em outra rota.
     try { // Falta Validar, 100% Validado dia 11/03/2026
         // feito 09/03/2026, falta validar, Validado 11/03/2026
-        await mLogins.update({ // Atualizando o Status do Usuário para false
-            Ativo: false
-        }, {
-            where: {
-                Id_Usuario: req.userID
+        const DesativandoUsuario = await mLogins.update( // Atualizando o Status do Usuário para false
+            { 
+                Ativo : false
+            }, 
+            {
+                where : {
+                    Id_Usuario: req.userID
+                }
             }
-        });
+        );
 
-        await mSessoes.destroy( // Deletando o Registro da Sessão do Banco de Dados
+        if (!DesativandoUsuario[0]) { // Adicionada as verificações sobre as operações feitas no banco de dados. 12/03/2026.
+            return res.status(500).json({Erro : "Erro ao Desativar Usuário!"});
+        }
+
+        const ApagandoSessao = await mSessoes.destroy( // Deletando o Registro da Sessão do Banco de Dados
             {
                 where: {
                     Id_Usuario : req.userID
@@ -82,7 +94,53 @@ export async function desativaUsuario (req, res) { // Pequena mudanaça na regra
             }
         )
 
+        if (!ApagandoSessao) { // Adicionado 12/03/2026, falta validar.
+            return res.status(500).json({Erro : "Erro Ao Deletar Sessão do Usuário!"});
+        }
+
         return res.status(204); // Retornando a Resposta com um status de OK mas sem o body da requisição
+
+    } catch (error) {
+        return res.status(500).json({Erro: error});
+    }
+}
+
+export async function ativarUsuario(req, res) { // Feito 12/03/2026 falta validar
+    try {
+        const SessionPasword = process.env.PasswordSession;
+
+        const AtivandoUsuario = await mLogins.update(
+            {
+                Ativo : true
+            }, 
+            {
+                where : {
+                    Id_Usuario : req.userID
+                }
+            }
+        );
+
+        if (!AtivandoUsuario[0]) {
+            return res.status(500).json({Erro: `Nenhum registro atualizado`});
+        }
+
+        const CriandoSessao = await mSessoes.create({
+            Id_Usuario : req.userID,
+            Token : jwt.sign({Id_Usuario : req.userID}, SessionPasword, { expiresIn : '1h' })
+        });
+
+        if (!CriandoSessao) {
+            return res.status(500).json({Erro : `Sessão não Criada`});
+        }
+
+        res.cookie('sessionToken', CriandoSessao.toJSON().Token, {
+            path : '/',
+            secure : false,
+            httpOnly : false,
+            sameSite : 'lax'
+        });
+
+        return res.status(204);
 
     } catch (error) {
         return res.status(500).json({Erro: error});

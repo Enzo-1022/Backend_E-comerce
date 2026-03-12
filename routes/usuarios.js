@@ -1,11 +1,8 @@
-// var express = require('express'); // Criando uma instancia do Express
-// var controllerUsuarios = require('../controllers/controllerUsuarios'); // Importando o Controller dos Usuarios
-// var middlewareSessao = require('../middlewares/middlewareSessao.js'); // Importando o Middleware de autenticação das sessões
+import express from 'express';
 
-import express from 'express'
 var router = express.Router(); // instanciando o objeto router
 
-import {perfilUsuario, catalogo, AttInfosUsuario, desativaUsuario} from '../controllers/controllerUsuarios.js';
+import {perfilUsuario, catalogo, AttInfosUsuario, desativaUsuario, ativarUsuario} from '../controllers/controllerUsuarios.js';
 
 import middlewareSessao from '../middlewares/middlewareSessao.js'
 
@@ -25,5 +22,7 @@ router.get('/Perfil', middlewareSessao, perfilUsuario); // Validar
 router.put('/AtualizarDados', middlewareSessao, AttInfosUsuario); // Validar
 
 router.patch('/DesativarPerfil', middlewareSessao, desativaUsuario); // Validado 11/03/2026
+
+router.patch('/AtivarPerfil', middlewareSessao, ativarUsuario); // Feito 12/03/2026 falta validar
 
 export default router;
