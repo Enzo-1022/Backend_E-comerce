@@ -10,6 +10,4 @@ router.post('/', Login);
 
 router.post('/Cadastro', Cadastro);
 
-// module.exports = router;
-
 export default router;
