@@ -1,4 +1,3 @@
-import mProdutos from '../models/mProdutos.js';
 import { validationResult, body } from 'express-validator';
 import mUsuarios from '../models/mUsuarios.js';
 import mSessoes from '../models/mSessoes.js';
@@ -15,8 +14,6 @@ export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/20
         var user = JSON.parse(JSON.stringify(
             await mUsuarios.findByPk(req.userID) // aqui ultilizamos uma técnica que aprendi recentemente que é a gravação de nova infos dentro da requisição, o middleware consegue gravar novos campos com informações dentro da requisição que são acessiveis apartir dos proximos middleware/callback
         ));
-
-        console.log(user) // Parte da Validação
 
         if(!user){ // Validar realmente se isso está dando certo 
             return res.status(400).json({Erro: `Usuario não encontrado!`});
@@ -45,7 +42,7 @@ export const AttInfosUsuario = [ // Validar
             }
 
             // Validar como o Sequelize nos traz os erros para add um tratamento para esse possiveis erros
-            await mUsuarios.update(
+            const AtualizandoUsuario = await mUsuarios.update(
                 {
                     Nome : req.body.Nome,
                     Data_Nascimento : req.body.Data_Nascimento,
@@ -57,6 +54,10 @@ export const AttInfosUsuario = [ // Validar
                     }
                 }
             );
+
+            if (!AtualizandoUsuario[0]) {
+                return res.json(500).json({Erro: "Erro ao Atualizar Usuário"});
+            }
             // Falta Terminar e Validar 18/02/2026.
 
             return res.status(204) // 204 é um código de sucesso mas que não envia nenhum conteudo em seu corpo.
@@ -144,25 +145,5 @@ export async function ativarUsuario(req, res) { // Feito 12/03/2026 falta valida
 
     } catch (error) {
         return res.status(500).json({Erro: error});
-    }
-}
-
-export async function catalogo (req, res) {
-    try 
-    {
-        const Catalogo = JSON.parse(JSON.stringify( // Conversão para objeto js
-            await mProdutos.findAll() // Buscando todos os produtos, buscar todos os produtos não é uma boa pratica caso possua um numero muito elevado de registros isso interfere diretamente na performance do banco de dados e do backend
-        ));
-
-        return res.status(200).json( // Respondendo a requisição com o status 200 ok, e enviando os prudutos
-            { 
-                Produtos : await Catalogo
-            }
-        ) 
-    } 
-    catch (error) 
-    {
-        // Caso ocorra algum erro respondemos há requisição com o Status 500 erro interno do servidor
-        return res.status(500).json({ Erro : `Erro Interno do servidor, Tente novamente! </br> ${error}` });
     }
 }

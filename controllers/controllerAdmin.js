@@ -85,7 +85,7 @@ export const AtualizandoProduto = [ // Criado 12/03/2026, falta validar
             );
 
             if (!AtualizandoProduto[0]) {
-                return res.status(500).json({Erro : 'Erro ao Atualizar Pedido'});
+                return res.status(500).json({Erro : 'Erro ao Atualizar Produto'});
             }
 
             return res.status(204);
