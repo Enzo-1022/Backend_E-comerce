@@ -62,7 +62,7 @@ export const Cadastro = [ // Callback para cadastrar um novo usuario
                 return res.status(500).json({Erro : "Erro Interno do Servidor, não foi possivel cadastrar o novo usuario."})
             }
 
-            return res.status(201).json({Resultado : "ok"}); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
+            return res.status(201); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
 
         } catch (error) {
             res.status(500).json({Erro : `Erro Interno do Servidor, ${error}`})
@@ -96,16 +96,16 @@ export const Login = [
             
             if (!login.length) // Se a variavel login for uma array vazia significa que não existe um usuario cadastrado com aquele email e logo entra no if e retorna a resposta a requisição com o status 401 não autorizado
             {
-                return res.status(401).json({
+                return res.status(404).json({
                     Erro : "Não Autorizado! Email não cadastrado!"
                 });
             }
 
             if (!login[0].Ativo) { // Validando se o usuário está com a conta ativa
-                return res.status(401).json({Erro : "Não autorizado, Usuario desativado!"})
+                return res.status(403).json({Erro : "Não autorizado, Usuario desativado!", IdUsuario :  login[0].Id_Usuario});
             }
             
-            if(!await Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Validar, Validado
+            if(!await Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Verifica Senha
                 return res.status(401).json({
                     Erro : "Não Autorizado! Senha incorreta!"
                 });
@@ -139,9 +139,7 @@ export const Login = [
                 sameSite : 'lax',
             });
 
-            return res.status(200).json({
-                Mensagem : "Logado com Sucesso! Sessão criada com sucesso!"
-            });
+            return res.status(204);
 
         } catch (error) {
             return res.status(500).json({
