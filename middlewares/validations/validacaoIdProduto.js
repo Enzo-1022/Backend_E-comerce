@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import { param, validationResult } from "express-validator";
 
 const validacaoIdProduto = [
     param('Id_Produto').isInt().withMessage("O Id deve ser do tipo Int").toInt(),

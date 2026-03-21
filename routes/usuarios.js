@@ -2,7 +2,7 @@ import express from 'express';
 
 var router = express.Router(); // instanciando o objeto router
 
-import {perfilUsuario, catalogo, AttInfosUsuario, desativaUsuario, ativarUsuario} from '../controllers/controllerUsuarios.js';
+import {perfilUsuario, AttInfosUsuario, desativaUsuario, ativarUsuario} from '../controllers/controllerUsuarios.js';
 
 import middlewareSessao from '../middlewares/middlewareSessao.js'
 
@@ -15,7 +15,6 @@ import middlewareSessao from '../middlewares/middlewareSessao.js'
   middlewareSessao é a função de middleware que passamos
   ja o controllerUsuarios.catalogo é a função de callback
 */
-router.get('/Catalogo', middlewareSessao, catalogo);
 
 router.get('/Perfil', middlewareSessao, perfilUsuario); // Validar
 

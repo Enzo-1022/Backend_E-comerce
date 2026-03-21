@@ -3,9 +3,6 @@
 /*
  * Module dependencies.
 */
-
-// var app = require('../app');
-// var debug = require('debug')('backend-e-comerce:server');
 import debug from 'debug';
 import http from 'http'
 import app from '../app.js';
@@ -19,7 +16,7 @@ app.set('port', port);
 
 /**
  * Create HTTP server.
- */
+*/
 
 //var server = https.createServer(options, app); // Para mudar novamente para http, só trocar o https por http e retirar o options
 var server = http.createServer(app);
