@@ -60,7 +60,7 @@ export const AttInfosUsuario = [ // Validar
             }
             // Falta Terminar e Validar 18/02/2026.
 
-            return res.status(204) // 204 é um código de sucesso mas que não envia nenhum conteudo em seu corpo.
+            return res.status(204).end() // 204 é um código de sucesso mas que não envia nenhum conteudo em seu corpo.
 
         } catch (error) {
             return res.status(500).json({Erro: error});
@@ -99,7 +99,7 @@ export async function desativaUsuario (req, res) { // Pequena mudanaça na regra
             return res.status(500).json({Erro : "Erro Ao Deletar Sessão do Usuário!"});
         }
 
-        return res.status(204); // Retornando a Resposta com um status de OK mas sem o body da requisição
+        return res.status(204).end(); // Retornando a Resposta com um status de OK mas sem o body da requisição
 
     } catch (error) {
         return res.status(500).json({Erro: error});
@@ -141,7 +141,7 @@ export async function ativarUsuario(req, res) { // Feito 12/03/2026 falta valida
             sameSite : 'lax'
         });
 
-        return res.status(204);
+        return res.status(204).end();
 
     } catch (error) {
         return res.status(500).json({Erro: error});

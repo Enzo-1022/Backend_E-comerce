@@ -62,7 +62,7 @@ export const Cadastro = [ // Callback para cadastrar um novo usuario
                 return res.status(500).json({Erro : "Erro Interno do Servidor, não foi possivel cadastrar o novo usuario."})
             }
 
-            return res.status(201); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
+            return res.status(201).end(); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
 
         } catch (error) {
             res.status(500).json({Erro : `Erro Interno do Servidor, ${error}`})
@@ -139,7 +139,7 @@ export const Login = [
                 sameSite : 'lax',
             });
 
-            return res.status(204);
+            return res.status(200).json({IdUsuario : login[0].Id_Usuario});
 
         } catch (error) {
             return res.status(500).json({

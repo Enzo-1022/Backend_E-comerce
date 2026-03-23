@@ -8,3 +8,5 @@ const router = new Router();
 router.get('/catalogo', middlewareSessao, catalogo);
 
 router.get('/:Id_Produto', middlewareSessao, validacaoIdProduto, produto); // Feito 14/03/2026, Falta Validar.
+
+export default router;

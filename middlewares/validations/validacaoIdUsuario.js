@@ -13,12 +13,12 @@ const ValidacaoIdUsuario = [
                 return res.status(400).json({Erro : `Parametro de Rota Invalido ${Errors[0]}`});
             }
 
-            req.userID = req.params.Id_Usuario.split(":")[1];
+            req.userID = req.params.Id_Usuario;
 
             next();
 
         } catch (error) {
-            return res.status(200).json({Erro : error});
+            return res.status(500).json({Erro : error});
         }
     }
 ];
