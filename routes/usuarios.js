@@ -6,7 +6,7 @@ import {perfilUsuario, AttInfosUsuario, desativaUsuario, ativarUsuario} from '..
 
 import middlewareSessao from '../middlewares/middlewareSessao.js';
 
-import ValidacaoIdProduto from '../middlewares/validations/validacaoIdUsuario.js';
+import ValidacaoIdUsuario from '../middlewares/validations/validacaoIdUsuario.js';
 
 /* 
   Criando as Rotas e dando a elas suas devidas funções tanto de callback a middlewares 
@@ -24,6 +24,6 @@ router.put('/AtualizarDados', middlewareSessao, AttInfosUsuario); // Validar
 
 router.patch('/DesativarPerfil', middlewareSessao, desativaUsuario); // Validado 11/03/2026
 
-router.patch('/AtivarPerfil/:Id_Usuario', ValidacaoIdProduto, ativarUsuario); // Feito 12/03/2026 falta validar
+router.patch('/AtivarPerfil/:Id_Usuario', ValidacaoIdUsuario, ativarUsuario); // Feito 12/03/2026 falta validar
 
 export default router;
