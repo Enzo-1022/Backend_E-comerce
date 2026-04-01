@@ -26,47 +26,34 @@ export async function perfilUsuario (req, res) { // VALIDADO, Feito dia 17/02/20
     }
 }
 
-export const AttInfosUsuario = [ // Validar
-
-    body('Cpf').trim().escape().notEmpty(),
-    body('Data_Nascimento').trim().escape().notEmpty(),
-    body('Nome').trim().escape().notEmpty(),
-
-    async (req, res) => {
-        try {
-            var errors = validationResult(req)
-
-            if(!errors.isEmpty())
+export async function attUsuario (req, res) { // Criado o Middleware que valida os dados enviados no corpo da requisição
+    try {
+        // Validar como o Sequelize nos traz os erros para add um tratamento para esse possiveis erros
+        const AtualizandoUsuario = await mUsuarios.update(
             {
-                return res.status(400).json(`Má requisição, ${errors}`);   
-            }
-
-            // Validar como o Sequelize nos traz os erros para add um tratamento para esse possiveis erros
-            const AtualizandoUsuario = await mUsuarios.update(
-                {
-                    Nome : req.body.Nome,
-                    Data_Nascimento : req.body.Data_Nascimento,
-                    Cpf : req.body.Cpf
-                },
-                {
-                    where : {
-                        Id_Usuario : req.userID
-                    }
+                Nome : req.body.Nome,
+                Data_Nascimento : req.body.Data_Nascimento,
+                // Cpf : req.body.Cpf
+            },
+            {
+                where : {
+                    Id_Usuario : req.userID
                 }
-            );
-
-            if (!AtualizandoUsuario[0]) {
-                return res.json(500).json({Erro: "Erro ao Atualizar Usuário"});
             }
-            // Falta Terminar e Validar 18/02/2026.
+        );
 
-            return res.status(204).end() // 204 é um código de sucesso mas que não envia nenhum conteudo em seu corpo.
-
-        } catch (error) {
-            return res.status(500).json({Erro: error});
+        if (!AtualizandoUsuario[0]) {
+            return res.json(500).json({Erro: "Erro ao Atualizar Usuário"});
         }
+        // Falta Terminar e Validar 18/02/2026.
+        // Retirar o CPF da atualização cadastral e adicionar uma criptografia no cpf para guardar no BD
+
+        return res.status(204).end() // 204 é um código de sucesso mas que não envia nenhum conteudo em seu corpo.
+
+    } catch (error) {
+        return res.status(500).json({Erro: error});
     }
-];
+}
 
 export async function desativaUsuario (req, res) { // Pequena mudanaça na regra pois antes a tabela que continha a informação se o usuario estava ativo era a própria do usuario alterei isso para a tabela de login
     // Aqui a lógica é a seguinte como estou utlizando JWT tokens para validar a sessão do usuario, eu pensei na seguite lógica como existe um midlleware que valida as sessões com base nos registros do banco de dados quando eu desativar o usuario eu apago esse registro e logo ao tentar acessar qualquer url que dependa de estar logado a api retorna o status não autorizado. Como ele não está logado ele não consegue mais acessar essa rota logo não poderá desativar seu perfil ja estando desativado, ja a lógica para reativar o perfil seria implementada no login do usuário quando ele tentasse entrar novamente cairia navalidação para saber se o usuario esta logado ou não n~so estiver irá exibir a opção de reativação que cairá em outra rota.

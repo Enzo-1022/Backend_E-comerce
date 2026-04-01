@@ -1,13 +1,13 @@
-// var express = require('express');
 import express from 'express';
+import ValidacaoLogin from '../middlewares/validations/validacaoLogin.js';
+import ValidacaoCadastroUsuario from '../middlewares/validations/validacaoCadastroUsuario.js';
+
 var router = express.Router();
 
-// var controllerLogin = require('../controllers/controllerLogin');
+import {login, cadastro} from '../controllers/controllerLogin.js'
 
-import {Login, Cadastro} from '../controllers/controllerLogin.js'
+router.post('/', ValidacaoLogin, login);
 
-router.post('/', Login);
-
-router.post('/Cadastro', Cadastro);
+router.post('/Cadastro', ValidacaoCadastroUsuario, cadastro);
 
 export default router;

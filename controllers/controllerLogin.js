@@ -14,140 +14,116 @@ import { Hashing } from '../Services/hasing.js'; // Importa
 
 const SessionPasword = process.env.PasswordSession;
 
-
 // Adicionar uma validação para caso ocorrer erro em alguma função que faça a inserção no banco, apagar oq ja tinha sido inserido e vise e versa.
-export const Cadastro = [ // Callback para cadastrar um novo usuario
-    // Função refatotorada e melhorada 16/09/2025
-    // Refatorei ja no novo padrao que aprendi sobre api rest, usando os codigos de status http
+// Callback para cadastrar um novo usuario
+// Função refatotorada e melhorada 16/09/2025
+// Refatorei ja no novo padrao que aprendi sobre api rest, usando os codigos de status http
 
-    body('Email').trim().escape().notEmpty(),
-    body('Senha').trim().escape().notEmpty(),
-    body('Cpf').trim().escape().notEmpty(),
-    body('Data_Nascimento').trim().escape().notEmpty(),
-    body('Nome').trim().escape().notEmpty(),
+export async function cadastro (req, res) { // Um novo padrão a se seguir eliminando os blocos else 
+    try {
+        var errors = validationResult(req);
 
-    async (req, res) => { // Um novo padrão a se seguir eliminando os blocos else 
+        if (!errors.isEmpty()) 
+        {
+            return res.status(400).json({Erro: "Dados Invalidos!"});
+        } 
 
-        try {
-            var errors = validationResult(req);
+        const verificaUsuExistemte = JSON.parse(JSON.stringify(await Logins.findAll({
+            where : { Email : req.body.Email }
+        })));
 
-            if (!errors.isEmpty()) 
-            {
-                return res.status(400).json({Erro: "Dados Invalidos!"});
-            } 
-
-            const verificaUsuExistemte = JSON.parse(JSON.stringify(await Logins.findAll({
-                where : { Email : req.body.Email }
-            })));
-
-            if (verificaUsuExistemte.length) {
-                return res.status(409).json({Erro : "Conflito! um mesmo usuario já cadastrado com o mesmo email."})
-            }
-
-            const novoUsuario = await Usuarios.create({
-                Nome : req.body.Nome,
-                Data_Nascimento : req.body.Data_Nascimento,
-                Cpf : req.body.Cpf
-            });
-
-            const novoLogin = await Logins.create({
-                Id_Usuario : novoUsuario.Id_Usuario,
-                Email : req.body.Email,
-                Senha : await Hashing.criandoHash(req.body.Senha), // Validado
-                Admin : false,
-                ativo: true
-            });
-
-            if (!novoUsuario || !novoLogin) {
-                return res.status(500).json({Erro : "Erro Interno do Servidor, não foi possivel cadastrar o novo usuario."})
-            }
-
-            return res.status(201).end(); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
-
-        } catch (error) {
-            res.status(500).json({Erro : `Erro Interno do Servidor, ${error}`})
+        if (verificaUsuExistemte.length) {
+            return res.status(409).json({Erro : "Conflito! um mesmo usuario já cadastrado com o mesmo email."})
         }
+
+        const novoUsuario = await Usuarios.create({
+            Nome : req.body.Nome,
+            Data_Nascimento : req.body.Data_Nascimento,
+            Cpf : req.body.Cpf
+        });
+
+        const novoLogin = await Logins.create({
+            Id_Usuario : novoUsuario.Id_Usuario,
+            Email : req.body.Email,
+            Senha : await Hashing.criandoHash(req.body.Senha), // Validado
+            Admin : false,
+            ativo: true
+        });
+
+        if (!novoUsuario || !novoLogin) {
+            return res.status(500).json({Erro : "Erro Interno do Servidor, não foi possivel cadastrar o novo usuario."})
+        }
+
+        return res.status(201).end(); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
+
+    } catch (error) {
+        res.status(500).json({Erro : `Erro Interno do Servidor, ${error}`})
     }
-];
+};
 
-export const Login = [
+export async function login(req, res) {
+    try {
+        const login = JSON.parse(JSON.stringify( // Busca o login do usuario no banco de dados se não houver retorna um array vazio
+            await Logins.findAll({
+                where : {
+                    Email : req.body.Email
+                }
+            })
+        ));
+        
+        if (!login.length) // Se a variavel login for uma array vazia significa que não existe um usuario cadastrado com aquele email e logo entra no if e retorna a resposta a requisição com o status 401 não autorizado
+        {
+            return res.status(404).json({
+                Erro : "Não Autorizado! Email não cadastrado!"
+            });
+        }
 
-    body('Email').trim().escape().notEmpty(),
-    body('Senha').trim().escape().notEmpty(),
-
-    async (req, res) => {
-        try {
-            var errors = validationResult(req);
-
-            if (!errors.isEmpty()) 
-            {
-                return res.status(400).json({
-                    Erro:  "Conflito! Dados Invalidos."
-                });
-            }
+        if (!login[0].Ativo) { // Validando se o usuário está com a conta ativa
+            return res.status(403).json({Erro : "Não autorizado, Usuario desativado!", IdUsuario :  login[0].Id_Usuario});
+        }
+        
+        if(!await Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Verifica Senha
+            return res.status(401).json({
+                Erro : "Não Autorizado! Senha incorreta!"
+            });
+        }
             
-            const login = JSON.parse(JSON.stringify( // Busca o login do usuario no banco de dados se não houver retorna um array vazio
-                await Logins.findAll({
-                    where : {
-                        Email : req.body.Email
-                    }
-                })
-            ));
-            
-            if (!login.length) // Se a variavel login for uma array vazia significa que não existe um usuario cadastrado com aquele email e logo entra no if e retorna a resposta a requisição com o status 401 não autorizado
-            {
-                return res.status(404).json({
-                    Erro : "Não Autorizado! Email não cadastrado!"
-                });
+        // se tudo estiver certo o servidor gera um cookie de seção, ainda preciso criar uma tabela  para administrar-mos as seções dos usuarios, preciso criar o middleware para verificar se o id de sessão que iremos passar via cabeçalho authenticator está valido ou não e buscar uma biblioteca para gerar os tokens de sessão.
+        
+        const sessaoAtiva = JSON.parse(JSON.stringify( await Sessoes.findAll({ // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
+            where : {
+                Id_Usuario : login[0].Id_Usuario
             }
+        })));
 
-            if (!login[0].Ativo) { // Validando se o usuário está com a conta ativa
-                return res.status(403).json({Erro : "Não autorizado, Usuario desativado!", IdUsuario :  login[0].Id_Usuario});
-            }
-            
-            if(!await Hashing.verificaHash(login[0].Senha, req.body.Senha)) { // Verifica Senha
-                return res.status(401).json({
-                    Erro : "Não Autorizado! Senha incorreta!"
-                });
-            }
-             
-            // se tudo estiver certo o servidor gera um cookie de seção, ainda preciso criar uma tabela  para administrar-mos as seções dos usuarios, preciso criar o middleware para verificar se o id de sessão que iremos passar via cabeçalho authenticator está valido ou não e buscar uma biblioteca para gerar os tokens de sessão.
-            
-            const sessaoAtiva = JSON.parse(JSON.stringify( await Sessoes.findAll({ // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
+        if (sessaoAtiva.length) { // Se já houver uma sessão ativa para o usuario, deletamos ela para criar uma nova
+            await Sessoes.destroy({
                 where : {
                     Id_Usuario : login[0].Id_Usuario
                 }
-            })));
-
-            if (sessaoAtiva.length) { // Se já houver uma sessão ativa para o usuario, deletamos ela para criar uma nova
-                await Sessoes.destroy({
-                    where : {
-                        Id_Usuario : login[0].Id_Usuario
-                    }
-                });
-            }
-
-            const novaSessao = await Sessoes.create({ // Criando um novo registro de sessão no banco de dados
-                Id_Usuario : login[0].Id_Usuario,
-                Token : jwt.sign({ Id_Usuario : login[0].Id_Usuario }, SessionPasword, { expiresIn : '1h' }) // Criando o token de sessão com JWT
-            });
-
-            res.cookie('sessionToken', novaSessao.toJSON().Token, {
-                path : '/', // Torna o Cookie acessivel em toda a aplicação 
-                secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado vi http
-                httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
-                sameSite : 'lax',
-            });
-
-            return res.status(200).json({IdUsuario : login[0].Id_Usuario});
-
-        } catch (error) {
-            return res.status(500).json({
-                Erro : `Erro interno do servidor! Tente novamente, se o erro persistir, contate o administrador do sistema! ${error}`
             });
         }
+
+        const novaSessao = await Sessoes.create({ // Criando um novo registro de sessão no banco de dados
+            Id_Usuario : login[0].Id_Usuario,
+            Token : jwt.sign({ Id_Usuario : login[0].Id_Usuario }, SessionPasword, { expiresIn : '1h' }) // Criando o token de sessão com JWT
+        });
+
+        res.cookie('sessionToken', novaSessao.toJSON().Token, {
+            path : '/', // Torna o Cookie acessivel em toda a aplicação 
+            secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado vi http
+            httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
+            sameSite : 'lax',
+        });
+
+        return res.status(200).json({IdUsuario : login[0].Id_Usuario});
+
+    } catch (error) {
+        return res.status(500).json({
+            Erro : `Erro interno do servidor! Tente novamente, se o erro persistir, contate o administrador do sistema! ${error}`
+        });
     }
-];
+};
 
 // Comecei a refatorar o callback de login, preciso testa-lo e revisa-lo, Também preciso fazer o middleware para controle de sessão. Repensar a lógica para ver se toda vez que o usuario entrar na tela de login, o callback irá verificar sua sessão ou somente o middleware.
 // 18/09/2025 comecei a fazer o envio do cookie de sessão para o front, falta mudaar a api par https junto com o front para que o cookie de seessaõ seja acessivel em toda a aplicação.
