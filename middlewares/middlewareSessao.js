@@ -2,34 +2,31 @@ import jwt from 'jsonwebtoken';
 
 import 'dotenv/config';
 
-import Sessoes from '../models/mSessoes.js'; // Modelo de sessôes
+import mSessoes from '../models/mSessoes.js'; // Modelo de sessôes
 
+import Sessoes from '../Services/sessoes.js';
+
+// Irei modificar a lógica para mandar o refresh/session token através dos cookies
 export default async function middlewareSessao(req, res, next) {
   try {
 
-    var token = !req.headers.authorization? undefined : req.headers.authorization.split(' ')[1]; // Adicionei a validação para caso não exista nada no cabeçalho aurhorization, fazer mais validações 25/02/2026.
+    console.log(req.cookies); //Retirar depois, estou usando apenas para Depurar 
+  
+    var token = req.cookies.sessionToken? req.cookies.sessionToken : undefined; // Testar para saber se está dando certo essa verificação 
 
-    if (token == null || token == undefined) 
+    if (token == undefined) 
     {
       return res.status(401).json({Erro : `Não Autorizado! Token Indefinido`});
     }
 
-    const VerificacaoToken = jwt.verify(token, process.env.PasswordSession)
+    const VerificandoSessao = await Sessoes.verificaSessao(token.Id_Usuario, token);
 
-    const Sessao = await Sessoes.findAll({
-      where : {
-        Id_Usuario : VerificacaoToken.Id_Usuario
-      } 
-    });
-
-    // Validar se no método jwt.verify ja tem a verificação de expiração por time/hora
-
-    if (!Sessao.length) 
+    if (!VerificandoSessao) 
     {
       return res.status(401).json({Erro : "Não autorizado! Token Invalido!"});
     }
 
-    // add o user id a requisição para caso algum middleware subsequente precise
+    // adiciona o user id a requisição para caso algum middleware subsequente precise
     req.userID = VerificacaoToken.Id_Usuario;
 
     return next();
@@ -45,7 +42,6 @@ export default async function middlewareSessao(req, res, next) {
   }
 }
 
-// export default middlewareSessao;
 // 23/09/2025 - Middleware para verificar se o token de sessão é valido ou não.
 // validar se esta tudo certo, se quando um usuario não possui o cooki ele tarata normalmente e etc... colocar o httponly no cookie de sessão.
-// 26/09/2025 refatorado para ao invés de usarmos os cookies para obter o 
+// 26/09/2025 refatorado para ao invés de usarmos os cookies para obter o

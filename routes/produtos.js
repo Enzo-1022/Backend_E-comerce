@@ -4,7 +4,7 @@ import validacaoIdProduto from "../middlewares/validations/validacaoIdProduto.js
 import ValidacaoNumPagina from "../middlewares/validations/validacaoNumPagina.js";
 import { catalogo, produto } from "../controllers/controllerProdutos.js";
 
-const router = new Router();
+var router = new Router();
 
 router.get('/catalogo', middlewareSessao, ValidacaoNumPagina, catalogo); // Validar
 
