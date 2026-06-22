@@ -10,6 +10,7 @@ import indexRouter from './routes/index.js';
 import loginRouter from './routes/login.js';
 import adminRouter from './routes/admin.js';
 import produtosRouter from './routes/produtos.js';
+import authorizationRouter from './routes/authorization.js';
 
 // const __dirname = path.dirname(__filename);
 
@@ -35,5 +36,6 @@ app.use('/Usuarios', usuarios);
 app.use('/Login', loginRouter);
 app.use('/Admin', adminRouter);
 app.use('/Produtos', produtosRouter);
+app.use('/Authorization', authorizationRouter);
 
 export default app;

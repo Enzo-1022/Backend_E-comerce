@@ -1,14 +1,16 @@
 import jwt from "jsonwebtoken";
 import 'dotenv/config';
-import Sessoes from "../Services/sessoes";
+import Sessoes from "../Services/sessoes.js";
 
 const SessionPasword = process.env.PasswordSession;
 
-function AttAcessToken(req, res) {
+export async function AttAcessToken(req, res) {
    try {
         // Função para atualizar o acess token 
-        const CriandoAcessToken = Sessoes.criaAcessToken(req.userID, false);
-        res.status(200).json({'AcessToken': CriandoAcessToken});
+        const CriandoAcessToken = await Sessoes.criaAcessToken(req.userID, false);
+
+        return res.status(200).json({'AcessToken': CriandoAcessToken});
+
    } catch (error) {
         res.status(500).json({Erro : error});
    }

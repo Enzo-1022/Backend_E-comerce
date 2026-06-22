@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 import 'dotenv/config';
-import Sessoes from "../Services/sessoes";
+import Sessoes from "../Services/sessoes.js";
 
 export default async function middlewareVerificaAcessToken (req, res, next) {
     try { // Testar isso aqui dps

@@ -1,5 +1,5 @@
-import mSessoes from "../models/mSessoes";
-import mLogin from "../models/mLogins";
+import mSessoes from "../models/mSessoes.js";
+import mLogin from "../models/mLogins.js";
 import jwt from "jsonwebtoken";
 
 import 'dotenv/config';
@@ -69,11 +69,13 @@ export default class Sessoes {
     }
 
     // Acess Token
-    static async criaAcessToken(userId, isAdmin) { // IsAdmin tem que ser um valor boolean
+    static async criaAcessToken(Id_Login, isAdmin) { // IsAdmin tem que ser um valor boolean
 
-        const Longin = await mLogin.findByPk(userId);
+        const Login = await mLogin.findByPk(Id_Login, {
+            raw : true
+        });
 
-        return jwt.sign({ Id_Usuario : userId, IsAdmin: Longin.toJSON().Admin }, PasswordSession, { expiresIn : '15m' });
+        return jwt.sign({ Id_Usuario : Login.Id_Usuario, IsAdmin: Login.Admin == null ? false : Login.Admin }, PasswordSession, { expiresIn : '15m' });
     }
 
     static validaAcessToken(token) {

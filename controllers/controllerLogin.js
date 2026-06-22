@@ -74,12 +74,12 @@ export async function cadastro (req, res) { // Um novo padrão a se seguir elimi
 };
 
 // Melhorias no Sistema de Login com os Token de Sessão e de Acesso 01/05/2026, Passei a criação dos códigos para uma classe em um arquivo separado e adicionei a criação e o envio do acess token ao realizar o login agr contamos com dois tokens de autenticação, o de sessão e o de acesso.
-export async function login(req, res) {
+export async function login(req, res) { // Validada as implementações do novo sistema de acess e refresh token, falta adicionar um controle para que o usuário não faça diversas solicitações de login 22/06/2026
     try {
         const Login = await Logins.findAll(
             {
                 where : {
-                    Email : req.body.Email
+                    Email : req.Email
                 },
                 raw : true // Utilizando o método raw como true o sequelize nos traz apenas os dados buscados diretamente do banco sem os metadados que o sequelize traz com o findall com raw: false
             }
@@ -92,16 +92,16 @@ export async function login(req, res) {
         }
 
         if (!Login[0].Ativo) { // Validando se o usuário está com a conta ativa
-            return res.status(403).json({Erro : "Não autorizado, Usuario desativado!", IdUsuario :  login[0].Id_Usuario});
+            return res.status(403).json({Erro : "Não autorizado, Usuario desativado!", IdUsuario :  Login[0].Id_Usuario});
         }
         
-        if(!await Hashing.verificaHash(Login[0].Senha, req.body.Senha)) { // Verifica Senha
+        if(!await Hashing.verificaHash(Login[0].Senha, req.Senha)) { // Verifica Senha
             return res.status(401).json({
                 Erro : "Não Autorizado! Senha incorreta!"
             });
         }
 
-        // Caso a senha todos os dados de login forem corretos podemos prossefuir para a criação dos tokens de sessão e o acess token
+        // Caso a senha e todos os dados de login forem corretos podemos prosseguir para a criação dos tokens de sessão e o acess token
 
         // Primeiro apagamos os dados da tabela de sessão, é uma tabela que estou utilizando para guardar o token de sessao para poder compara-lo e ter mais uma referencia da sessão ao usuário
         await Sessoes.excluiSessao(Login[0].Id_Usuario); // Apagando a sessão caso o usuário possua, se não encontrar nenhum registro o sequelize não faz nada e nem gera um erro ele apenas retorna um numero inteiro que significa a quantidade de linhas afetadas pela ação.
@@ -127,9 +127,10 @@ export async function login(req, res) {
         );
 
         // Respondendo a Solicitação de Login com o token de sessão em um cookie e o acess token no body da aplicação.
-        return res.status(200).json({IdUsuario : Login[0].Id_Usuario, AcessToken : Sessoes.criaAcessToken(Login[0].Id_Usuario, false)});
+        return res.status(200).json({IdUsuario : Login[0].Id_Usuario, AcessToken : await Sessoes.criaAcessToken(Login[0].Id_Login, false)});
 
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             Erro : `Erro interno do servidor! Tente novamente, se o erro persistir, contate o administrador do sistema! ${error}`
         });

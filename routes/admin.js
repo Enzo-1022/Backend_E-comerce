@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import express from 'express';
 import middlewareSessao from '../middlewares/middlewareSessao.js';
 import validacaoIdProduto from '../middlewares/validations/validacaoIdProduto.js';
 import { CadastroProdutos, AtualizandoProduto } from '../controllers/controllerAdmin.js';
 
-var router = Router(); // Instanciando o modulo de Router do Express para gerenciamento/criação das rotas da aplicação
+var router = express.Router(); // Instanciando o modulo de Router do Express para gerenciamento/criação das rotas da aplicação
 
 router.post('/CadastroProduto', middlewareSessao, CadastroProdutos);
 
