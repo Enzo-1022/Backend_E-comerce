@@ -25,14 +25,14 @@ export default class Sessoes {
         );
     }
 
-    static async verificaSessao(userId, token) {
+    static async verificaSessao(token) {
         try {
             const ValidandoSessiontoken = jwt.verify(token, PasswordSession);
 
             const BuscandoSessao = await mSessoes.findAll(
                 { // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
                     where : {
-                        Id_Usuario : userId
+                        Id_Usuario : ValidandoSessiontoken.Id_Usuario
                     },
                     raw : true
                 }
@@ -46,11 +46,11 @@ export default class Sessoes {
                 throw new Error("Token Divergente");
             }
 
-            return true;
+            return {SessaoValida : true, UserID : ValidandoSessiontoken.Id_Usuario};
 
         } catch (error) {
             console.error(error);
-            return false;
+            return {SessaoValida : false, UserID : null};
         }  
     }
 
@@ -69,13 +69,16 @@ export default class Sessoes {
     }
 
     // Acess Token
-    static async criaAcessToken(Id_Login, isAdmin) { // IsAdmin tem que ser um valor boolean
+    static async criaAcessToken(UserID) {
 
-        const Login = await mLogin.findByPk(Id_Login, {
+        const Login = await mLogin.findAll({
+            where: {
+                Id_Usuario : UserID
+            },
             raw : true
         });
 
-        return jwt.sign({ Id_Usuario : Login.Id_Usuario, IsAdmin: Login.Admin == null ? false : Login.Admin }, PasswordSession, { expiresIn : '15m' });
+        return jwt.sign({ Id_Usuario : Login[0]?.Id_Usuario, IsAdmin: Login[0]?.Admin == null ? false : Login[0]?.Admin }, PasswordSession, { expiresIn : '15m' });
     }
 
     static validaAcessToken(token) {

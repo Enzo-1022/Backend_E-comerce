@@ -20,6 +20,7 @@ var app = express();
 // Setando os midlewares
 app.use(cors({ // Aqui estamos setando a biblioteca cors para que o Express possa usa-la
     origin : 'http://localhost:3000', // Aqui vc pode colocar o dominio que vai acessar sua api
+    // origin : true, // Apenas para teste com curl
     credentials : true, // Isso é necessario para habilitar o uso de cookies, ceredntial é oque permite o uso de cookies
     methods : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Aqui vc pode colocar os metodos que a api vai aceitar
 })); 
