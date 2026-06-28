@@ -4,7 +4,7 @@ import 'dotenv/config';
 import Sessoes from "../Services/sessoes.js";
 
 export default async function middlewareVerificaAcessToken (req, res, next) { // Middleawre que verifica o acess token
-    try { // Testar isso aqui dps
+    try {
         var token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : undefined;
 
         if (token == undefined) 
@@ -15,6 +15,7 @@ export default async function middlewareVerificaAcessToken (req, res, next) { //
         const VerificandoToken = Sessoes.validaAcessToken(token);
 
         req.userID = VerificandoToken.Id_Usuario;
+        req.IsAdmin = VerificandoToken.IsAdmin; // Add pois irei precisar no middleware de roles.
 
         return next();
 
@@ -25,6 +26,7 @@ export default async function middlewareVerificaAcessToken (req, res, next) { //
             return res.status(401).json({Erro: 'Token Expirado'});
         }
 
-        return res.status(500).json({Erro: error});
+        console.error(error);
+        return res.status(500).json({Erro: "Erro Interno do Servidor"});
     }
 }

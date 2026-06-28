@@ -17,12 +17,10 @@ const SessionPasword = process.env.PasswordSession;
 
 // Adicionar uma validação para caso ocorrer erro em alguma função que faça a inserção no banco, apagar oq ja tinha sido inserido e vise e versa.
 // Callback para cadastrar um novo usuario
-// Função refatotorada e melhorada 16/09/2025
-// Refatorei ja no novo padrao que aprendi sobre api rest, usando os codigos de status http
 // Mais Melhorias 01/05/2026, Adicionada a verificação se existe um usuário ja cadastrado com o cpf informado no cadastro
 // Validar DPS 01/05/2026.
 
-export async function cadastro (req, res) { // Um novo padrão a se seguir eliminando os blocos else 
+export async function cadastro (req, res) {
     try {
         const VerificaCpf = await Usuarios.count(
             {
@@ -69,7 +67,8 @@ export async function cadastro (req, res) { // Um novo padrão a se seguir elimi
         return res.status(201).end(); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
 
     } catch (error) { // Existe um erro de usabilidade: caso aconteça algum erro durante a execução do segundo registro (O de Login, que cria o login para que o usuário possa se autenticar e entrar na aplicação) no banco de dados, o usuário terá seu cadastro na tabela de usuários registrado mas na de login não, assim o usuário não consegue se cadastrar dnv pois o seu cpf ja está cadastrado mas tbm não consegue fazer o login pois não há o seu registro dentro da tabela de logins, pensar em uma solução para esse erro 
-        res.status(500).json({Erro : `Erro Interno do Servidor, ${error}`});
+        console.error(error);
+        return res.status(500).json({Erro : "Erro Interno do Servidor"});
     }
 };
 
@@ -127,12 +126,12 @@ export async function login(req, res) { // Validada as implementações do novo 
         );
 
         // Respondendo a Solicitação de Login com o token de sessão em um cookie e o acess token no body da aplicação.
-        return res.status(200).json({IdUsuario : Login[0].Id_Usuario, AcessToken : await Sessoes.criaAcessToken(Login[0].Id_Login, false)});
+        return res.status(200).json({IdUsuario : Login[0].Id_Usuario, AcessToken : await Sessoes.criaAcessToken(Login[0].Id_Login)});
 
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return res.status(500).json({
-            Erro : `Erro interno do servidor! Tente novamente, se o erro persistir, contate o administrador do sistema! ${error}`
+            Erro : "Erro interno do servidor!"
         });
     }
 }
