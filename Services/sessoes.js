@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import 'dotenv/config';
 
 const PasswordSession =  process.env.PasswordSession;
+const PasswordAcessToken = process.env.PasswordAcessToken;
 
 export default class Sessoes {
     // Token de Sessão
@@ -12,7 +13,7 @@ export default class Sessoes {
         return await mSessoes.create(// Criando um novo registro de sessão no banco de dados
             {
                 Id_Usuario : userId,
-                Token : jwt.sign({ Id_Usuario : userId }, PasswordSession, { expiresIn : '7d' }) // Criando o token de sessão com JWT
+                Token : jwt.sign({ Id_Usuario : userId }, PasswordSession, { expiresIn : '7d', algorithm: 'HS256' }) // Criando o token de sessão com JWT
             }
         ).then( 
             sessao => {
@@ -78,10 +79,10 @@ export default class Sessoes {
             raw : true
         });
 
-        return jwt.sign({ Id_Usuario : Login[0]?.Id_Usuario, IsAdmin: Login[0]?.Admin == null ? false : Login[0]?.Admin }, PasswordSession, { expiresIn : '15m' });
+        return jwt.sign({ Id_Usuario : Login[0]?.Id_Usuario, IsAdmin: Login[0]?.Admin == null ? false : Login[0]?.Admin }, PasswordAcessToken, { expiresIn : '15m' });
     }
 
     static validaAcessToken(token) {
-        return jwt.verify(token, PasswordSession);
+        return jwt.verify(token, PasswordAcessToken);
     }
 }

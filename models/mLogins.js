@@ -34,7 +34,7 @@ const Logins = sequelize.define(
 
         Admin : {
             type : DataTypes.BOOLEAN,
-            allowNull : true,
+            allowNull : false,
             defaultValue : false
         },
 

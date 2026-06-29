@@ -27,7 +27,7 @@ const Produtos = sequelize.define(
         },
 
         Preco : {
-            type : DataTypes.INTEGER,
+            type : DataTypes.DECIMAL,
             allowNull: false
         }
     },

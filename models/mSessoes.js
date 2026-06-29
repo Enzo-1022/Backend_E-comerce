@@ -20,7 +20,7 @@ const Sessoes = sequelize.define(
             }
         },
         Token : {
-            type : DataTypes.STRING,
+            type : DataTypes.TEXT,
             allowNull : false
         }
     },
@@ -30,6 +30,6 @@ const Sessoes = sequelize.define(
     }
 );
 
-// await Sessoes.sync();
+// await Sessoes.sync({alter: true});
 
 export default Sessoes;
