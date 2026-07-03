@@ -1,9 +1,11 @@
 import express from 'express';
 // import path from 'path';
 import cookieParser from 'cookie-parser';
-import logger from 'morgan'
+import logger from 'morgan';
 
 import cors from 'cors';
+
+import loggerHttp from './config/loggerHttp.js';
 
 import usuarios from './routes/usuarios.js';
 import indexRouter from './routes/index.js';
@@ -24,6 +26,8 @@ app.use(cors({ // Aqui estamos setando a biblioteca cors para que o Express poss
     credentials : true, // Isso é necessario para habilitar o uso de cookies, ceredntial é oque permite o uso de cookies
     methods : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Aqui vc pode colocar os metodos que a api vai aceitar
 })); 
+
+app.use(loggerHttp);
 
 app.use(logger('dev'));
 app.use(express.json());

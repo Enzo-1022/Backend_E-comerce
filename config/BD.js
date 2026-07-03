@@ -8,12 +8,13 @@ const sequelize = new Sequelize('ecomerce2', process.env.UserBD, process.env.Dat
     port: process.env.BDPORT
 });
 
-// try {
-//     await sequelize.authenticate();
+// Adicionar um Log de Erro
+try {
+    await sequelize.authenticate();
 
-//     console.log('Deu certo!')
-// } catch (error) {
-//     console.log(error)
-// }
+    console.log('MYSQL CONECTADO');
+} catch (error) {
+    console.error(error);
+}
 
 export default sequelize;
