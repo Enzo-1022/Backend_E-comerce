@@ -2,14 +2,18 @@ import { createClient } from "redis";
 
 import { RateLimiterRedis } from "rate-limiter-flexible";
 
+import logger from "./logger.js";
+
+import 'dotenv/config';
+
 const redisClient = await createClient(
     {
-        url : "redis://localhost:6379"
+        url : process.env.URLRedis
     }
 );
 
 //logs para caso de erro
-await redisClient.connect().then(() => {console.log('REDIS CONECTADO')}).catch(err=> console.error(err));
+await redisClient.connect().then(() => {logger.info("REDIS CONECTADO!")}).catch(err=> {logger.error({Err : {Titulo : "Erro de Conexão com o Redis!", Detalhes : err} }); throw new Error(err)});
 
 const opts = {
     storeClient: redisClient,

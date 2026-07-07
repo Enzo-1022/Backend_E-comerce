@@ -1,6 +1,8 @@
 import { Sequelize } from 'sequelize';
 
-import 'dotenv/config'
+import 'dotenv/config';
+
+import logger from './logger.js';
 
 const sequelize = new Sequelize('ecomerce2', process.env.UserBD, process.env.DataBasePass, {
     host :  process.env.URLBD,
@@ -8,13 +10,13 @@ const sequelize = new Sequelize('ecomerce2', process.env.UserBD, process.env.Dat
     port: process.env.BDPORT
 });
 
-// Adicionar um Log de Erro
 try {
     await sequelize.authenticate();
 
-    console.log('MYSQL CONECTADO');
+    logger.info("MYSQL CONECTADO!");
 } catch (error) {
-    console.error(error);
+    logger.error({Err : {Titulo : "Erro ao Conectar com o MYSQL!", Detalhes : error}});
+    throw new Error(error);
 }
 
 export default sequelize;
