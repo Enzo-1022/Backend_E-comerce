@@ -1,26 +1,19 @@
 /*
     Importando os modelos
 */
-import Usuarios from '../models/mUsuarios.js'; // Modelo de usuarios
+import mUsuarios from '../models/mUsuarios.js'; // Modelo de usuarios
 import Logins from '../models/mLogins.js'; // Modelo de logins
-import { validationResult, body } from 'express-validator';
 import mSessoes from '../models/mSessoes.js'; // Modelo de sessôes
-import Sessoes from '../Services/sessoes.js';
+import Sessoes from '../Services/sessoes.js'; // Classe com a Lógica das Sessões
 
-import jwt from 'jsonwebtoken';
+import { Hashing } from '../Services/hasing.js'; // Importando a Classe de Hasshing
 
-import 'dotenv/config';
+import sUsuarios from "../Services/usuarios.js";
 
-import { Hashing } from '../Services/hasing.js'; // Importa
-
-const SessionPasword = process.env.PasswordSession;
+const Usuarios = new sUsuarios(mUsuarios, Hashing);
 
 // Adicionar uma validação para caso ocorrer erro em alguma função que faça a inserção no banco, apagar oq ja tinha sido inserido e vise e versa.
-// Callback para cadastrar um novo usuario
-// Mais Melhorias 01/05/2026, Adicionada a verificação se existe um usuário ja cadastrado com o cpf informado no cadastro
-// Validar DPS 01/05/2026.
-
-export async function cadastro (req, res) {
+export async function cadastro (req, res) { // Callback para cadastrar um novo usuario
     try {
         const VerificaCpf = await Usuarios.count(
             {
@@ -31,10 +24,28 @@ export async function cadastro (req, res) {
         );
 
         if (VerificaCpf) {
-            return res.status(409).json({Erro : "Ja existe um Usuário Cadastrado para o Cpf informado."})
+
+            req.log.error(
+                {
+                    Erro : {
+                        Titulo : "Tentativa de Cadastro Negada",
+                        Detalhes : "Ja existe um Usuario Cadastrado para o Cpf informado",
+                        ReqID : req.id
+                    }
+                }
+            );
+
+            return res.status(409).json(
+                {
+                    Erro : {
+                        Titulo : "Conflito no Cadastro (CPF)",
+                        Detalhes : "Ja existe um Usuário Cadastrado para o Cpf informado."
+                    }
+                }
+            );
         }
 
-        const VerificaUsuExistente = await Logins.count(
+        const verificaEmail = await Logins.count(
             {
                 where : { 
                     Email : req.Email 
@@ -42,33 +53,79 @@ export async function cadastro (req, res) {
             }
         );
 
-        if (VerificaUsuExistente) {
-            return res.status(409).json({Erro : "Conflito! um mesmo usuario já cadastrado com o mesmo email."});
+        if (verificaEmail) {
+            req.log.error(
+                {
+                    Erro : {
+                        Titulo : "Tentativa de Cadastro Negada",
+                        Detalhes : "Ja existe um Usuario Cadastrado para o Email informado",
+                        ReqID : req.id
+                    }
+                }
+            );
+
+            return res.status(409).json(
+                {
+                    Erro : {
+                        Titulo : "Conflito no Cadastro (Email)",
+                        Detalhes : "Ja Existe um Usuario Cadastrado para o Email Informado."
+                    }
+                }
+            );
         }
 
-        const NovoUsuario = await Usuarios.create(
-            {
-                Nome : req.Nome,
-                Data_Nascimento : req.Data_Nascimento,
-                Cpf : req.Cpf
-            }
-        );
+        // const novoUsuario = await Usuarios.create(
+        //     {
+        //         Nome : req.Nome,
+        //         Data_Nascimento : req.Data_Nascimento,
+        //         Cpf : req.Cpf
+        //     }
+        // );
 
-        const novoLogin = await Logins.create(
+        // const novoLogin = await Logins.create(
+        //     {
+        //         Id_Usuario : NovoUsuario.Id_Usuario,
+        //         Email : req.Email,
+        //         Senha : await Hashing.criandoHash(req.Senha),
+        //         Admin : false,
+        //         ativo: true
+        //     }
+        // );
+
+        Usuarios.cadastroUsuario(req.Nome, req.Data_Nascimento, req.Cpf, req.Email, req.Senha)
+
+        req.log.info(
             {
-                Id_Usuario : NovoUsuario.Id_Usuario,
-                Email : req.Email,
-                Senha : await Hashing.criandoHash(req.Senha),
-                Admin : false,
-                ativo: true
+                Acao : "CADASTRO_USUARIO", 
+                Status : 'OK', 
+                Detalhes : `USUARIO ID: ${novoUsuario.Id_Usuario} Cadastrado com Sucesso`, 
+                EmailUsuario : req.Email,
+                ReqID : req.id
             }
         );
 
         return res.status(201).end(); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
 
     } catch (error) { // Existe um erro de usabilidade: caso aconteça algum erro durante a execução do segundo registro (O de Login, que cria o login para que o usuário possa se autenticar e entrar na aplicação) no banco de dados, o usuário terá seu cadastro na tabela de usuários registrado mas na de login não, assim o usuário não consegue se cadastrar dnv pois o seu cpf ja está cadastrado mas tbm não consegue fazer o login pois não há o seu registro dentro da tabela de logins, pensar em uma solução para esse erro 
-        console.error(error);
-        return res.status(500).json({Erro : "Erro Interno do Servidor"});
+        req.log.error(
+            {
+                Erro : {
+                    Titulo : "Erro ao Realizar Cadastro",
+                    Detalhes : error,
+                    ReqID : req.id
+                }
+            }
+        );
+
+        return res.status(500).json(
+            {
+                Erro : {
+                    Titulo : "Erro ao Realizar Cadastro",
+                    Detalhes : "Erro Interno ao Realizar Cadastro",
+                    ReqID : req.id
+                }
+            }
+        );
     }
 };
 
