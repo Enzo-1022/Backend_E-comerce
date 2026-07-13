@@ -1,11 +1,15 @@
-import argon2 from "argon2"; // Validado 
+export default class Hashing {
+    #argon2
 
-export class Hashing {
-    static async criandoHash(senha) {
-        const hash = await argon2.hash(
+    constructor(pArgon2){
+        this.#argon2 = pArgon2;
+    }
+
+    async criandoHash(senha) {
+        const hash = await this.#argon2.hash(
             senha, 
             {
-                type: argon2.argon2id, // Tipo de hash que o algoritimo fará
+                type: this.#argon2.argon2id, // Tipo de hash que o algoritimo fará
                 memoryCost: 2 ** 16, // Uso de Mémoria que será usado durante o processo de criação do hash
                 timeCost: 5, // Numero de vezes que o algoritimo de hash irá iterar sobre a senha
                 parallelism: 1 // Uso de threads que o algoritimo irá usar para a criação do hash
@@ -15,9 +19,9 @@ export class Hashing {
         return hash; // Depois de criado o hash é retornado
     }
 
-    static async verificaHash(hash, senha) {
+    async verificaHash(hash, senha) {
         try {
-            return await argon2.verify(hash, senha);
+            return await this.#argon2.verify(hash, senha);
         } catch (error) {
             return false ;
         }

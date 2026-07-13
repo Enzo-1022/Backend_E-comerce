@@ -1,41 +1,33 @@
 export default class Usuarios {
-    userModel
-    hashing
+    #userModel
+    #serviceLogin
 
-    constructor(pUserModel, pHashing) {
-        this.userModel = pUserModel;
-        this.hashing = pHashing;
+    constructor(pUserModel, pHashing, pServiceLogin) {
+        this.#userModel = pUserModel;
+        this.#serviceLogin = pUserModel;
     }
 
     /**
-     * Realiza o cadastro do usuario
+     * Método que Realiza o Cadastro dos Usuários.
      * 
      * @param {*} pNome - Nome do Usuario 
      * @param {*} pDtNascimento - Data De Nascimento do Usuario
      * @param {*} pCpf - CPF do Usuario
      * @param {*} pEmail - Email do Usuario
      * @param {*} pSenha - Senha do usuario
-     * @returns {*} - Objeto com os objetos criados referentes ao cadastro do usuario e do login
+     * @returns {*} - Retorna 2 objetos, o novoUsuario traz as informações do cadastro do usuário, ja o novoLogin raz as informações cadastradas para o login
     */
     async cadastroUsuario(pNome, pDtNascimento, pCpf, pEmail, pSenha) {
         try {
-            const novoUsuario = await Usuarios.create(
+            const novoUsuario = await this.userModel.create(
                 {
-                    Nome : req.Nome,
-                    Data_Nascimento : req.Data_Nascimento,
-                    Cpf : req.Cpf
+                    Nome : pNome,
+                    Data_Nascimento : pDtNascimento,
+                    Cpf : pCpf
                 }
             );
 
-            const novoLogin = await Logins.create(
-                {
-                    Id_Usuario : NovoUsuario.Id_Usuario,
-                    Email : req.Email,
-                    Senha : await hashing.criandoHash(req.Senha),
-                    Admin : false,
-                    ativo: true
-                }
-            );
+            const novoLogin = await this.serviceLogin.cadastroLogin(novoUsuario.Id_Usuario, pEmail, pSenha);
 
             return {novoUsuario, novoLogin};
         } catch (error) {
@@ -44,29 +36,25 @@ export default class Usuarios {
     }
 
     /**
-     * @param {*} pCpf 
+     * Método que verifica se existe um cpf já cadastrado
+     * 
+     * @param {*} pCpf - Cpf que será buscado
+     * @returns {*} - Retorna a contagem da consulta com o cpf informado. Se houver algum erro durante o processo retornamos o erro
     */
     async verificaCpf(pCpf) {
-        const VerificaCpf = await Usuarios.count(
-            {
-                where : {
-                    Cpf : pCpf
+        try {
+            const VerificaCpf = await this.#userModel.count(
+                {
+                    where : {
+                        Cpf : pCpf
+                    }
                 }
-            }
-        );
+            );
+    
+            return VerificaCpf;
+            
+        } catch (error) {
+            throw new Error(error);
+        }
     }
-
-    /**
-     * @param {*} pEmail 
-    */
-    async verificaEmail(pEmail) {
-        const verificaEmail = await Logins.count(
-            {
-                where : { 
-                    Email : pEmail
-                }
-            }
-        );
-    }
-
 }

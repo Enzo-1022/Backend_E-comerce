@@ -128,7 +128,7 @@ export async function atualizandoProduto (req, res) {  // Criado 12/03/2026, fal
                 IdProduto : req.Id_Produto, 
                 ReqID : req.id
             }
-        ); // Adicionar o Id do produto atualizado o ID do Usuario que atualizou 
+        );
 
         return res.status(204).end();
 

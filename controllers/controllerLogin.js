@@ -1,27 +1,31 @@
 /*
     Importando os modelos
 */
-import mUsuarios from '../models/mUsuarios.js'; // Modelo de usuarios
-import Logins from '../models/mLogins.js'; // Modelo de logins
-import mSessoes from '../models/mSessoes.js'; // Modelo de sessôes
-import Sessoes from '../Services/sessoes.js'; // Classe com a Lógica das Sessões
+import mUsuarios from "../models/mUsuarios.js"; // Modelo de usuarios
+import mLogins from "../models/mLogins.js"; // Modelo de logins
+import mSessoes from "../models/mSessoes.js"; // Modelo de sessôes
+import Sessoes from "../Services/sessoes.js"; // Classe com a Lógica das Sessões
 
-import { Hashing } from '../Services/hasing.js'; // Importando a Classe de Hasshing
+import argon2  from "argon2"; // Importando a blibioteca argon2 que estamos utilizando para fazer o hashing das senhas, aqui vamos passa-la como argumento para instanciar a classe service de hashing 
 
-import sUsuarios from "../Services/usuarios.js";
+/* 
+    Importando as classes de Service
+*/
+import sHashing from "../Services/hasing.js"; // Classe Service de Hasshing
+import sUsuarios from "../Services/usuarios.js"; // Classe service Usuarios
+import sLogin from "../Services/login.js"; // Classe service Logins
 
-const Usuarios = new sUsuarios(mUsuarios, Hashing);
+/* 
+    Instanciando as classes de Service
+*/
+const Hashing = new sHashing(argon2);
+const Logins = new sLogin(mLogins, Hashing);
+const Usuarios = new sUsuarios(mUsuarios, Logins);
 
 // Adicionar uma validação para caso ocorrer erro em alguma função que faça a inserção no banco, apagar oq ja tinha sido inserido e vise e versa.
 export async function cadastro (req, res) { // Callback para cadastrar um novo usuario
     try {
-        const VerificaCpf = await Usuarios.count(
-            {
-                where : {
-                    Cpf : req.Cpf
-                }
-            }
-        );
+        const VerificaCpf = await Usuarios.verificaCpf(req.Cpf);
 
         if (VerificaCpf) {
 
@@ -45,20 +49,14 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
             );
         }
 
-        const verificaEmail = await Logins.count(
-            {
-                where : { 
-                    Email : req.Email 
-                }
-            }
-        );
+        const verificaEmail = await Logins.verificaEmail(req.Email);
 
         if (verificaEmail) {
             req.log.error(
                 {
                     Erro : {
                         Titulo : "Tentativa de Cadastro Negada",
-                        Detalhes : "Ja existe um Usuario Cadastrado para o Email informado",
+                        Detalhes : `Ja existe um Usuario Cadastrado para o Email informado ${req.Email}`,
                         ReqID : req.id
                     }
                 }
@@ -68,37 +66,20 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
                 {
                     Erro : {
                         Titulo : "Conflito no Cadastro (Email)",
-                        Detalhes : "Ja Existe um Usuario Cadastrado para o Email Informado."
+                        Detalhes : "Ja Existe um Usuario Cadastrado para o Email Informado.",
+                        ReqID : req.id
                     }
                 }
             );
         }
 
-        // const novoUsuario = await Usuarios.create(
-        //     {
-        //         Nome : req.Nome,
-        //         Data_Nascimento : req.Data_Nascimento,
-        //         Cpf : req.Cpf
-        //     }
-        // );
-
-        // const novoLogin = await Logins.create(
-        //     {
-        //         Id_Usuario : NovoUsuario.Id_Usuario,
-        //         Email : req.Email,
-        //         Senha : await Hashing.criandoHash(req.Senha),
-        //         Admin : false,
-        //         ativo: true
-        //     }
-        // );
-
-        Usuarios.cadastroUsuario(req.Nome, req.Data_Nascimento, req.Cpf, req.Email, req.Senha)
+        const CriandoUsuario = await Usuarios.cadastroUsuario(req.Nome, req.Data_Nascimento, req.Cpf, req.Email, req.Senha);
 
         req.log.info(
             {
                 Acao : "CADASTRO_USUARIO", 
                 Status : 'OK', 
-                Detalhes : `USUARIO ID: ${novoUsuario.Id_Usuario} Cadastrado com Sucesso`, 
+                Detalhes : `USUARIO ID: ${CriandoUsuario.novoUsuario.Id_Usuario} Cadastrado com Sucesso`, 
                 EmailUsuario : req.Email,
                 ReqID : req.id
             }
@@ -132,29 +113,73 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
 // Melhorias no Sistema de Login com os Token de Sessão e de Acesso 01/05/2026, Passei a criação dos códigos para uma classe em um arquivo separado e adicionei a criação e o envio do acess token ao realizar o login agr contamos com dois tokens de autenticação, o de sessão e o de acesso.
 export async function login(req, res) { // Validada as implementações do novo sistema de acess e refresh token, falta adicionar um controle para que o usuário não faça diversas solicitações de login 22/06/2026
     try {
-        const Login = await Logins.findAll(
-            {
-                where : {
-                    Email : req.Email
-                },
-                raw : true // Utilizando o método raw como true o sequelize nos traz apenas os dados buscados diretamente do banco sem os metadados que o sequelize traz com o findall com raw: false
-            }
-        );
+        const Login = await Logins.buscandoLogin(req.Email);
         
         if (!Login.length) { // Se a variavel login for uma array vazia significa que não existe um usuario cadastrado com aquele email e logo entra no if e retorna a resposta a requisição com o status 401 não autorizado
-            return res.status(404).json({
-                Erro : "Não Autorizado! Email não cadastrado!"
-            });
+            
+            req.log.error(
+                {
+                    Erro : {
+                        Titulo : "Email não cadastrado",
+                        Detalhes : `Email não cadastrado: ${req.Email}`,
+                        ReqID : req.id
+                    }
+                }
+            )
+            
+            return res.status(404).json(
+                {
+                    Erro : {
+                        Titulo : "Usuario não encontrado",
+                        Detalhes : "O Email informado não está cadastrado",
+                        ReqID : req.id
+                    }
+                }
+            );
         }
 
         if (!Login[0].Ativo) { // Validando se o usuário está com a conta ativa
-            return res.status(403).json({Erro : "Não autorizado, Usuario desativado!", IdUsuario :  Login[0].Id_Usuario});
+
+            req.log.error(
+                {
+                    Erro : {
+                        Titulo : "Usuario não está Ativo",
+                        Detalhes : `O Usuario ${Login[0].Id_Usuario}, não está ativo`,
+                        ReqID : req.id
+                    }
+                }
+            );
+
+            return res.status(403).json(
+                {
+                    Erro : {
+                        Titulo : "Não autorizado, Usuario desativado!",
+                        Detalhes : "O Usuario não está ativo",
+                        ReqID : req.id
+                    }, 
+                    IdUsuario :  Login[0].Id_Usuario
+                }
+            );
         }
         
         if(!await Hashing.verificaHash(Login[0].Senha, req.Senha)) { // Verifica Senha
-            return res.status(401).json({
-                Erro : "Não Autorizado! Senha incorreta!"
-            });
+            req.log.error(
+                {
+                    Titulo : "Senha Incorreta",
+                    Detalhes : "A senha informada está incorreta",
+                    ReqID : req.id
+                }
+            );
+
+            return res.status(401).json(
+                {
+                    Erro : {
+                        Titulo : "Senha incorreta",
+                        Detalhes : "A Senha informada está incorreta",
+                        ReqID : req.id
+                    }
+                }
+            );
         }
 
         // Caso a senha e todos os dados de login forem corretos podemos prosseguir para a criação dos tokens de sessão e o acess token
@@ -171,7 +196,7 @@ export async function login(req, res) { // Validada as implementações do novo 
         }
 
         // Criando o Cookie que armazena o token de sessão.
-        res.cookie(
+        res.cookie( // Reconfigurar para ter segurança nos cookies, permitir que não seja lido por js e só seja enviado por https
             'sessionToken', // Definindo o nome do Cookie
             CriandoSessao.Sessao.Token, // Conteudo do Cookie, atribuindo o token de sessão para o cookie
             {
@@ -182,18 +207,47 @@ export async function login(req, res) { // Validada as implementações do novo 
             }
         );
 
+        req.log.info(
+            {
+                Acao : "LOGIN",
+                Status : "OK",
+                Detalhes : `Usuario logado com sucesso ${Login[0].Id_Usuario}`,
+                Id_Usuario : Login[0].Id_Usuario,
+                Device : req.headers['user-agent'],
+                Data : new Date(),
+                ReqID : req.id
+            }
+        );
+
         // Respondendo a Solicitação de Login com o token de sessão em um cookie e o acess token no body da aplicação.
-        return res.status(200).json({IdUsuario : Login[0].Id_Usuario, AcessToken : await Sessoes.criaAcessToken(Login[0].Id_Login)});
+        return res.status(200).json(
+            {
+                IdUsuario : Login[0].Id_Usuario, 
+                AcessToken : await Sessoes.criaAcessToken(Login[0].Id_Login)
+            }
+        );
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            Erro : "Erro interno do servidor!"
-        });
+        req.log.error(
+            {
+                Acao : "LOGIN",
+                Status : "ERRO",
+                Erro: {
+                    Titulo : "Erro interno do Servidor",
+                    Detalhes : error,
+                    ReqID : req.id
+                }
+            }
+        );
+
+        return res.status(500).json(
+            {
+                Erro : {
+                    TItulo : "Erro interno do servidor",
+                    Detalhes : "Um erro inesperado aconteceu ao tentar ralizar o login"
+                }
+            }
+        );
     }
 }
-
-// Comecei a refatorar o callback de login, preciso testa-lo e revisa-lo, Também preciso fazer o middleware para controle de sessão. Repensar a lógica para ver se toda vez que o usuario entrar na tela de login, o callback irá verificar sua sessão ou somente o middleware.
-// 18/09/2025 comecei a fazer o envio do cookie de sessão para o front, falta mudaar a api par https junto com o front para que o cookie de seessaõ seja acessivel em toda a aplicação.
-// 23/09/2025 - Terminei o callback de login, agora falta fazer o middleware para verificar se o token de sessão é valido ou não.
-// 24/04/2025 - Retirada da Lógica de criação e verificação de sessão para uma classe própria, e começo da implementação do acess token, antes só usava o token de sessão.
+// 12/07/2026 - Adicionei os Logs e refatorei as respostas, retirei toda a lógica do bd para os service de Usuarios e Logins
