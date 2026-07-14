@@ -21,36 +21,73 @@ export async function catalogo(req, res) { // Validar
         }
 
 
-        if(!req.PaginaRequerida){
-            const Produtos = await mProdutos.findAll({limit : 15});
+        if(!req.PaginaRequerida) {
+            const Produtos = await mProdutos.findAll(
+                {
+                    limit : 15
+                }
+            );
 
-            return res.status(200).json({Produtos: await Produtos.toJSON(), QtdPaginas : qtdPaginas});
+            return res.status(200).json(
+                {
+                    Produtos: await Produtos.toJSON(), 
+                    QtdPaginas : qtdPaginas
+                }
+            );
         }
 
-        const Produtos = await mProdutos.findAll({limit : 15, offset : req.PaginaRequerida * 15});
+        const Produtos = await mProdutos.findAll(
+            {
+                limit : 15, 
+                offset : req.PaginaRequerida * 15
+            }
+        );
 
-        return res.status(200).json({Produtos: await Produtos.toJSON(), QtdPaginas : qtdPaginas});
+        return res.status(200).json(
+            {
+                Produtos: await Produtos.toJSON(), QtdPaginas : qtdPaginas
+            }
+        );
 
     } catch (error) {
-        return res.status(500).json({Erro: error});
+        return res.status(500).json(
+            {
+                Erro : error
+            }
+        );
     }
 };
 
 export async function produto(req, res){
     try {
-        const Produto = await mProdutos.findAll({
-            where : {
-                Id_Produto : req.Id_Produto
+        const Produto = await mProdutos.findAll(
+            {
+                where : {
+                    Id_Produto : req.Id_Produto
+                },
+                raw : true
             }
-        });
+        );
 
         if (!Produto.length) {
-            return res.status(404).json({Erro : "Falha ao Encontrar Produto"});
+            return res.status(404).json(
+                {
+                    Erro : "Falha ao Encontrar Produto"
+                }
+            );
         }
 
-        return res.status(200).json({Produto : Produto.toJSON()});
+        return res.status(200).json(
+            {
+                Produto : Produto.toJSON()
+            }
+        );
 
     } catch (error) {
-        return res.status(500).json({ Erro: error });
+        return res.status(500).json(
+            {
+                Erro: error 
+            }
+        );
     }
 }

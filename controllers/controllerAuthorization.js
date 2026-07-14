@@ -28,6 +28,8 @@ export default async function AttAcessToken(req, res) { // Callback para atualiz
    } catch (error) {
           req.log.error(
                {
+                    Acao : "ATT_ACESS_TOKEN", 
+                    Status : "ERRO", 
                     Erro : {
                          Titulo : "Erro ao Atualizar Acess Token", 
                          Detalhes : error, 
