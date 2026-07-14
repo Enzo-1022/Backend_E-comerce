@@ -31,6 +31,8 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
 
             req.log.error(
                 {
+                    Acao : "CADASTRO_USUARIO",
+                    Status : 'ERRO',
                     Erro : {
                         Titulo : "Tentativa de Cadastro Negada",
                         Detalhes : "Ja existe um Usuario Cadastrado para o Cpf informado",
@@ -54,6 +56,8 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
         if (verificaEmail) {
             req.log.error(
                 {
+                    Acao : "CADASTRO_USUARIO",
+                    Status : 'ERRO', 
                     Erro : {
                         Titulo : "Tentativa de Cadastro Negada",
                         Detalhes : `Ja existe um Usuario Cadastrado para o Email informado ${req.Email}`,
@@ -90,6 +94,8 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
     } catch (error) { // Existe um erro de usabilidade: caso aconteça algum erro durante a execução do segundo registro (O de Login, que cria o login para que o usuário possa se autenticar e entrar na aplicação) no banco de dados, o usuário terá seu cadastro na tabela de usuários registrado mas na de login não, assim o usuário não consegue se cadastrar dnv pois o seu cpf ja está cadastrado mas tbm não consegue fazer o login pois não há o seu registro dentro da tabela de logins, pensar em uma solução para esse erro 
         req.log.error(
             {
+                Acao : "CADASTRO_USUARIO",
+                Status : 'ERRO',
                 Erro : {
                     Titulo : "Erro ao Realizar Cadastro",
                     Detalhes : error,
@@ -119,6 +125,8 @@ export async function login(req, res) { // Validada as implementações do novo 
             
             req.log.error(
                 {
+                    Acao : "LOGIN",
+                    Status : "ERRO",
                     Erro : {
                         Titulo : "Email não cadastrado",
                         Detalhes : `Email não cadastrado: ${req.Email}`,
@@ -142,9 +150,12 @@ export async function login(req, res) { // Validada as implementações do novo 
 
             req.log.error(
                 {
+                    Acao : "LOGIN",
+                    Status : "ERRO",
                     Erro : {
                         Titulo : "Usuario não está Ativo",
                         Detalhes : `O Usuario ${Login[0].Id_Usuario}, não está ativo`,
+                        Id_Usuario : Login[0].Id_Usuario,
                         ReqID : req.id
                     }
                 }
@@ -165,9 +176,13 @@ export async function login(req, res) { // Validada as implementações do novo 
         if(!await Hashing.verificaHash(Login[0].Senha, req.Senha)) { // Verifica Senha
             req.log.error(
                 {
-                    Titulo : "Senha Incorreta",
-                    Detalhes : "A senha informada está incorreta",
-                    ReqID : req.id
+                    Acao : "LOGIN",
+                    Status : "ERRO",
+                    Erro : {
+                        Titulo : "Senha Incorreta",
+                        Detalhes : "A senha informada está incorreta",
+                        ReqID : req.id
+                    }
                 }
             );
 

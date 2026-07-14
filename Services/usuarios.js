@@ -2,9 +2,9 @@ export default class Usuarios {
     #userModel
     #serviceLogin
 
-    constructor(pUserModel, pHashing, pServiceLogin) {
+    constructor(pUserModel, pServiceLogin) {
         this.#userModel = pUserModel;
-        this.#serviceLogin = pUserModel;
+        this.#serviceLogin = pServiceLogin;
     }
 
     /**
@@ -19,7 +19,7 @@ export default class Usuarios {
     */
     async cadastroUsuario(pNome, pDtNascimento, pCpf, pEmail, pSenha) {
         try {
-            const novoUsuario = await this.userModel.create(
+            const novoUsuario = await this.#userModel.create(
                 {
                     Nome : pNome,
                     Data_Nascimento : pDtNascimento,
@@ -27,7 +27,7 @@ export default class Usuarios {
                 }
             );
 
-            const novoLogin = await this.serviceLogin.cadastroLogin(novoUsuario.Id_Usuario, pEmail, pSenha);
+            const novoLogin = await this.#serviceLogin.cadastroLogin(novoUsuario.Id_Usuario, pEmail, pSenha);
 
             return {novoUsuario, novoLogin};
         } catch (error) {

@@ -17,11 +17,11 @@ export default class Logins {
      */
     async cadastroLogin(pIdUsuario, pEmail, pSenha) {
         try {
-            const cadastrandoLogin = await this.loginModel.create(
+            const cadastrandoLogin = await this.#loginModel.create(
                 {
                     Id_Usuario : pIdUsuario,
                     Email : pEmail,
-                    Senha : await this.serviceHashing.criandoHash(pSenha),
+                    Senha : await this.#serviceHashing.criandoHash(pSenha),
                     Admin : false,
                     ativo: true
                 }
@@ -42,7 +42,7 @@ export default class Logins {
      */
     async verificaEmail(pEmail) {
         try {
-            const buscandoEmail = this.loginModel.count(
+            const buscandoEmail = this.#loginModel.count(
                 {
                     where : {
                         Email : pEmail
@@ -53,7 +53,7 @@ export default class Logins {
             return buscandoEmail;
             
         } catch (error) {
-            throw new error;
+            throw new Error(error);
         }
     }
 
