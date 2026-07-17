@@ -1,58 +1,36 @@
 import { body, validationResult } from "express-validator";
 import mProdutos from "../models/mProdutos.js";
 
+import produtos from "../Services/produtos.js";
+
+const Produtos = new produtos(mProdutos);
+
 export async function catalogo(req, res) { // Validar
     try {
-        const QtdProdutos = await mProdutos.count();
-
-        var qtdPaginas;
+        const produtos = await Produtos.buscaProdutos(req.PaginaRequerida);
         
-        if (QtdProdutos >= 15) // Calculo de paginas com base nos produtos cadastrados no banco
-        {
-            if (QtdProdutos % 15){
-                qtdPaginas = Math.ceil(QtdProdutos / 15);
-            }
-            else {
-                qtdPaginas = QtdProdutos / 15;
-            }
-        }
-        else {
-            qtdPaginas = 1
-        }
-
-
-        if(!req.PaginaRequerida) {
-            const Produtos = await mProdutos.findAll(
-                {
-                    limit : 15
-                }
-            );
-
-            return res.status(200).json(
-                {
-                    Produtos: await Produtos.toJSON(), 
-                    QtdPaginas : qtdPaginas
-                }
-            );
-        }
-
-        const Produtos = await mProdutos.findAll(
-            {
-                limit : 15, 
-                offset : req.PaginaRequerida * 15
-            }
-        );
-
-        return res.status(200).json(
-            {
-                Produtos: await Produtos.toJSON(), QtdPaginas : qtdPaginas
-            }
-        );
+        res.status(200).json(produtos);
 
     } catch (error) {
+        req.log.error(
+            {
+                Acao : "CATALOGO",
+                Status : "ERRO",
+                Erro : {
+                    Titulo : "Erro ao Buscar Catalogo",
+                    Detalhes : error,
+                    ReqID : req.id
+                }
+            }
+        );
+
         return res.status(500).json(
             {
-                Erro : error
+                Erro : {
+                    Titulo : "Erro ao Buscar Catalogo",
+                    Detalhes : "Erro inesperado ao Buscar Catalogo",
+                    ReqID : req.id
+                }
             }
         );
     }
@@ -60,33 +38,45 @@ export async function catalogo(req, res) { // Validar
 
 export async function produto(req, res){
     try {
-        const Produto = await mProdutos.findAll(
-            {
-                where : {
-                    Id_Produto : req.Id_Produto
-                },
-                raw : true
-            }
-        );
+        const produto = await Produtos.buscaProduto(req.Id_Produto);
 
         if (!Produto.length) {
+
+            req.log.error(
+                {
+                    Acao : "BuscaDeProduto",
+                    Status : "ERRO",
+                    Erro : {
+                        Titulo : "Produto não encontrado",
+                        Detalhes : `Id do Produto ${req.Id_produto}, Resultado da Busca: ${Produto}`
+                    }
+                }
+            );
+
             return res.status(404).json(
                 {
-                    Erro : "Falha ao Encontrar Produto"
+                    Erro : {
+                        Titulo : "Falha ao Encontrar o Produto",
+                        Detalhes : "Não conseguimos encontrar o produto em nossa base de dados",
+                        ReqID : req.id
+                    }
                 }
             );
         }
 
         return res.status(200).json(
             {
-                Produto : Produto.toJSON()
+                Produto : produto
             }
         );
 
     } catch (error) {
         return res.status(500).json(
             {
-                Erro: error 
+                Erro : {
+                    Titulo : "",
+                    Detalhes : ""
+                } 
             }
         );
     }
