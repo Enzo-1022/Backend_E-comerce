@@ -38,13 +38,11 @@ const Logins = sequelize.define(
             defaultValue : false
         },
 
-        Ativo : { // Validar
+        Ativo : {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: true // Dps mudar para True
+            defaultValue: true
         }
-
-
     },
     {
         timestamps : false,

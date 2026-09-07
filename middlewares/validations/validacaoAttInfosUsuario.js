@@ -20,7 +20,11 @@ const ValidacaoAttInfosUsuario = [
             next();
 
         } catch (error) {
-            return res.status(500).json({Erro: error});
+            return res.status(500).json(
+                {
+                    Erro: error
+                }
+            );
         }
     }
 ];

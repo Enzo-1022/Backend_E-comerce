@@ -6,11 +6,12 @@ export default class Produtos {
     }
 
     /**
-     * Método que busca produtos com base na paginação imposta 
+     * Método que busca produtos com base na paginação
      * 
-     * @param {*} pNumPagRequirida -  
+     * @param {*} pNumPagRequirida - Numero da Pagina que a função Buscará
+     * @returns - Json com os produtos 
      */
-    buscaProdutos(pNumPagRequirida) {
+    async buscaProdutos(pNumPagRequirida) {
         try {
             const qtdProdutos = await this.#modeloProduto.count();
 
@@ -19,10 +20,10 @@ export default class Produtos {
             if (qtdProdutos >= 15) // Calculo de paginas com base nos produtos cadastrados no banco
             {
                 if (qtdProdutos % 15) {
-                    qtdPaginas = Math.ceil(QtdProdutos / 15);
+                    qtdPaginas = Math.ceil(qtdProdutos / 15);
                 }
                 else {
-                    qtdPaginas = QtdProdutos / 15;
+                    qtdPaginas = qtdProdutos / 15;
                 }
             }
             else {

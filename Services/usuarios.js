@@ -43,7 +43,7 @@ export default class Usuarios {
     */
     async verificaCpf(pCpf) {
         try {
-            const VerificaCpf = await this.#userModel.count(
+            const VerificaCpf = await this.#userModel.count( // Count retorna o numero de registros encontrados, por isso estou retornando ele, pois se for 0 aquele user não existe se for outro numero ele existe, na regra de negocio não se pode criar mais de um user com um mesmo cpf
                 {
                     where : {
                         Cpf : pCpf
@@ -57,4 +57,47 @@ export default class Usuarios {
             throw new Error(error);
         }
     }
+
+    /**
+     * Função que retorna as informações de perfil do usuário
+     * 
+     * @param {*} idUser - Id do Usuario que servirá como parametro de Busca
+     * @returns - Em caso de sucesso na busca a função retorna um json com os dados do usuario, em caso de não achar nenhum registro retorna null, caso aconteça algum erro retornará o erro
+     */
+    async perfilUsuario(idUser) {
+        try {
+            const userPerfil = await this.#userModel.findByPk( // O método FindByPk retorna a instancia do modelo com os dados achado, ou retorna null caso não encontre o registro
+                idUser,
+                {
+                    raw : true
+                }
+            );
+
+            return userPerfil;
+
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async atualizaCadastro(idUser, nomeUser, dtNascUser) {
+        try {
+            const attUsuario = await this.#userModel.update( // O método update do sequelize nos retorna um array, onde o primeiro indice é a contagem total de linhas afetadas pelo update e o segundo indice são as linhas afetadas (Linhas = Registros)
+                {
+                    Nome : nomeUser,
+                    Data_Nascimento : dtNascUser
+                },
+                {
+                    where : {
+                        Id_Usuario : idUser
+                    }
+                }
+            );
+
+            return attUsuario;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
 }

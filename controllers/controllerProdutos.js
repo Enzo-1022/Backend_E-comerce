@@ -40,7 +40,7 @@ export async function produto(req, res){
     try {
         const produto = await Produtos.buscaProduto(req.Id_Produto);
 
-        if (!Produto.length) {
+        if (!produto.length) {
 
             req.log.error(
                 {
@@ -48,7 +48,8 @@ export async function produto(req, res){
                     Status : "ERRO",
                     Erro : {
                         Titulo : "Produto não encontrado",
-                        Detalhes : `Id do Produto ${req.Id_produto}, Resultado da Busca: ${Produto}`
+                        Detalhes : `Id do Produto ${req.Id_produto}, Resultado da Busca: ${produto}`,
+                        ReqID : req.id
                     }
                 }
             );
@@ -71,11 +72,25 @@ export async function produto(req, res){
         );
 
     } catch (error) {
+
+        res.log.error(
+            {
+                Acao : "BUSCAR_PRODUTO",
+                Status : "ERRO",
+                Erro : {
+                    Titulo : `Erro ao Buscar Produto ${req.Id_Produto}`,
+                    Detalhes : error,
+                    ReqID : req.id
+                }
+            }
+        )
+
         return res.status(500).json(
             {
                 Erro : {
-                    Titulo : "",
-                    Detalhes : ""
+                    Titulo : `Erro Ao Buscar o Produto ${req.Id_Produto}`,
+                    Detalhes : "Erro interno no servidor ao tentar buscar o produto.",
+                    ReqID : req.id
                 } 
             }
         );

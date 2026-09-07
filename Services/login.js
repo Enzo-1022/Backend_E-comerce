@@ -57,6 +57,12 @@ export default class Logins {
         }
     }
 
+    /**
+     * Método que Busca um Registro de Login com base no Email do Usuário
+     * 
+     * @param {*} pEmail - Email que será usado como parametro de Busca
+     * @returns - Retorna uma instancia do modelo de Login com os dados encontrados na pesquisa/busca, caso de algum erro retorna o erro para que ele seja tratado na proxima cadeia de tratamento de erros
+     */
     async buscandoLogin(pEmail){
         try {
             const buscandoLogin = await this.#loginModel.findAll(
@@ -73,4 +79,57 @@ export default class Logins {
             throw new Error(error);
         }
     }
+
+    /**
+     * Método que desativa o login de um usuário com base no Id dele, Basicamente essa função é usada para desativar o perfil de usuarios.
+     * 
+     * @param {*} idUser - Id do usuario que será usado como parametro de busca
+     * @returns - Retorna uma array com 2 indices o primeiro é o total de linhas afetadas pelo update, o segundo indice é são as linhas afetadas, utilizamos o primeiro indice para validar se o usuário foi realmente desativado. Em caso de erros retornamos um novo erro para a proxima cadeia de tratamento de erros.      
+     */
+    async desativandoLogin(idUser) {
+        try {
+            const desativandoUsuario = await this.#loginModel.update(
+                {
+                    Ativo : false
+                },
+                {
+                    where : {
+                        Id_Usuario : idUser
+                    }
+                }
+            );
+
+            return desativandoUsuario;
+
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    /**
+     * Método que ativa o login do usuario, mudando o status de ativo na tabela de login de false para true. Basicamente estamos usando esse método para ativar os usuários que foram desativados antes.
+     * 
+     * @param {*} idUser - Id do usuário que será usado como parametro de busca
+     * @returns -Retorna uma array com 2 indices o primeiro é o total de linhas afetadas pelo update, o segundo indice retrata as linhas afetadas, utilizamos o primeiro indice para validar se o usuário foi realmente desativado. Em caso de erros retornamos um novo erro para a proxima cadeia de tratamento de erros.
+     */
+    async ativandoLogin(idUser) {
+        try {
+            const ativandoLogin = await this.#loginModel.update(
+                {
+                    Ativo : true
+                },
+                {
+                    where : {
+                        Id_Usuario : idUser
+                    }
+                }
+            );
+
+            return ativandoLogin;
+
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
 }
