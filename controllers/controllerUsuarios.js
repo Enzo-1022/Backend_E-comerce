@@ -11,8 +11,6 @@ const Usuarios = new sUsuarios(mUsuarios, undefined);
 
 import 'dotenv/config';
 
-import jwt from 'jsonwebtoken';
-
 /**
  * Callback que retorna o perfil dos usuarios
  * 

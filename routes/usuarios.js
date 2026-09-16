@@ -2,7 +2,7 @@ import express from "express";
 
 var router = express.Router(); // instanciando o objeto router
 
-import {perfilUsuario, attUsuario, desativaUsuario, ativarUsuario} from "../controllers/controllerUsuarios.js";
+import {perfilUsuario, atualizaUsuario, desativaUsuario, ativarUsuario} from "../controllers/controllerUsuarios.js";
 
 import middlewareAcessToken from "../middlewares/middlewareAcesstoken.js";
 
@@ -24,7 +24,7 @@ import middlewareLimitRate from "../middlewares/middlewareLimitRate.js";
 
 router.get('/Perfil', middlewareLimitRate, middlewareAcessToken, perfilUsuario); // Validar
 
-router.put('/AtualizarDados', middlewareLimitRate, middlewareAcessToken, ValidacaoAttInfosUsuario, attUsuario); // Validar
+router.put('/AtualizarDados', middlewareLimitRate, middlewareAcessToken, ValidacaoAttInfosUsuario, atualizaUsuario); // Validar
 
 router.patch('/DesativarPerfil', middlewareLimitRate, middlewareAcessToken, desativaUsuario); // Validado 11/03/2026
 

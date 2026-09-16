@@ -12,7 +12,7 @@ export default async function middlewareSessao(req, res, next) { // Validado par
 
     if (Token == undefined) 
     {
-      return res.status(401).json({Erro : "Token Indefinido"});
+      return res.status(401).json({Erro : "Token Indefinido de sessão indefinido"});
     }
 
     const VerificandoSessao = await Sessoes.verificaSessao(Token);

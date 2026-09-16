@@ -9,7 +9,7 @@ export default async function middlewareVerificaAcessToken (req, res, next) { //
 
         if (token == undefined) 
         {
-            return res.status(401).json({Erro : `Token Indefinido`});
+            return res.status(401).json({Erro : `Acess Token Indefinido`});
         }
 
         const VerificandoToken = Sessoes.validaAcessToken(token);

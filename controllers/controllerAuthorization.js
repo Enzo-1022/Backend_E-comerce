@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import 'dotenv/config';
 import Sessoes from "../Services/sessoes.js";
 
