@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize';
 
 import 'dotenv/config';
 
-import logger from './logger.js';
+import logger from './logger.config.js';
 
 const sequelize = new Sequelize('ecomerce2', process.env.UserBD, process.env.DataBasePass, {
     host :  process.env.URLBD,

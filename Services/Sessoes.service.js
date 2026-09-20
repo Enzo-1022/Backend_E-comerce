@@ -1,5 +1,5 @@
-import mSessoes from "../models/mSessoes.js";
-import mLogin from "../models/mLogins.js";
+import mSessoes from "../models/Sessoes.model.js";
+import mLogin from "../models/Logins.model.js";
 import jwt from "jsonwebtoken";
 
 import 'dotenv/config';

@@ -1,15 +1,15 @@
-import sequelize from '../config/BD.js';
+import { DataTypes } from "sequelize";
 
-import { DataTypes } from 'sequelize';
+import sequelize from '../config/BD.config.js';
 
-import Usuarios from './mUsuarios.js';
+import Usuarios from './Usuarios.model.js';
 
-import Produtos from './mProdutos.js';
+import Produtos from './Produtos.model.js';
 
-const Carrinho = sequelize.define(
-    'Carrinho',
+const Compras = sequelize.define(
+    'Compras',
     {
-        Id_Carrinho : {
+        Id_Compra : {
             type : DataTypes.INTEGER,
             primaryKey : true,
             autoIncrement : true
@@ -31,6 +31,20 @@ const Carrinho = sequelize.define(
                 model : Produtos,
                 key : 'Id_Produto'
             }
+        },
+
+        Quantidade : {
+            type : DataTypes.INTEGER,
+            allowNull : false
+        },
+
+        Data : {
+            type : DataTypes.DATEONLY,
+            allowNull : false
+        },
+
+        Status : {
+            type : DataTypes.STRING
         }
     },
     {
@@ -39,6 +53,6 @@ const Carrinho = sequelize.define(
     }
 );
 
-// console.log(await Carrinho.sync());
+// await Compras.sync();
 
-export default Carrinho;
+export default Compras;

@@ -1,4 +1,4 @@
-import mProdutos from '../models/mProdutos.js';
+import mProdutos from '../models/Produtos.model.js';
 
 /* Terminei isso aqui, fiz com sono não testei  12/06/25 */
 

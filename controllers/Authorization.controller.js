@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import Sessoes from "../Services/sessoes.js";
+import Sessoes from "../Services/Sessoes.service.js";
 
 const SessionPasword = process.env.PasswordSession;
 

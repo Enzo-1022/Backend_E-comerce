@@ -1,15 +1,15 @@
-import { DataTypes } from "sequelize";
+import sequelize from '../config/BD.config.js';
 
-import sequelize from '../config/BD.js';
+import { DataTypes } from 'sequelize';
 
-import Usuarios from './mUsuarios.js';
+import Usuarios from './Usuarios.model.js';
 
-import Produtos from './mProdutos.js';
+import Produtos from './Produtos.model.js';
 
-const Avaliacoes = sequelize.define(
-    'Avaliacoes',
+const Carrinho = sequelize.define(
+    'Carrinho',
     {
-        Id_Avaliacao : {
+        Id_Carrinho : {
             type : DataTypes.INTEGER,
             primaryKey : true,
             autoIncrement : true
@@ -31,15 +31,6 @@ const Avaliacoes = sequelize.define(
                 model : Produtos,
                 key : 'Id_Produto'
             }
-        },
-
-        Nota : {
-            type : DataTypes.INTEGER,
-            allowNull : false
-        },
-
-        Avaliacao : {
-            type : DataTypes.STRING,
         }
     },
     {
@@ -48,6 +39,6 @@ const Avaliacoes = sequelize.define(
     }
 );
 
-// console.log(await Avaliacoes.sync());
+// console.log(await Carrinho.sync());
 
-export default Avaliacoes;
+export default Carrinho;

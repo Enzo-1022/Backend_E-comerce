@@ -1,4 +1,4 @@
-import sequelize from '../config/BD.js';
+import sequelize from '../config/BD.config.js';
 
 import { DataTypes } from 'sequelize';
 

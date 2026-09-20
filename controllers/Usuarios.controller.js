@@ -1,15 +1,14 @@
-import mUsuarios from '../models/mUsuarios.js';
-import mSessoes from '../models/mSessoes.js';
-import mLogins from '../models/mLogins.js';
+import 'dotenv/config';
 
-import sUsuarios from "../Services/usuarios.js";
-import sLogin from "../Services/login.js";
-import Sessoes from '../Services/sessoes.js';
+import mUsuarios from '../models/Usuarios.model.js';
+import mLogins from '../models/Logins.model.js';
+
+import sUsuarios from "../Services/Usuarios.service.js";
+import sLogin from "../Services/Login.service.js";
+import Sessoes from '../Services/Sessoes.service.js';
 
 const Login = new sLogin(mLogins, undefined);
 const Usuarios = new sUsuarios(mUsuarios, undefined);
-
-import 'dotenv/config';
 
 /**
  * Callback que retorna o perfil dos usuarios

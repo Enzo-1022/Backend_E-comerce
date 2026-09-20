@@ -2,15 +2,15 @@ import express from "express";
 
 var router = express.Router(); // instanciando o objeto router
 
-import {perfilUsuario, atualizaUsuario, desativaUsuario, ativarUsuario} from "../controllers/controllerUsuarios.js";
+import { perfilUsuario, atualizaUsuario, desativaUsuario, ativarUsuario } from "../controllers/Usuarios.controller.js";
 
-import middlewareAcessToken from "../middlewares/middlewareAcesstoken.js";
+import middlewareAcessToken from "../middlewares/Acesstoken.middleware.js";
 
-import ValidacaoIdUsuario from "../middlewares/validations/validacaoIdUsuario.js";
+import ValidacaoIdUsuario from "../middlewares/validations/IdUsuario.validation.js";
 
-import ValidacaoAttInfosUsuario from "../middlewares/validations/validacaoAttInfosUsuario.js";
+import ValidacaoAttInfosUsuario from "../middlewares/validations/AttInfosUsuario.validation.js";
 
-import middlewareLimitRate from "../middlewares/middlewareLimitRate.js";
+import middlewareLimitRate from "../middlewares/LimitRate.middleware.js";
 
 /* 
   Criando as Rotas e dando a elas suas devidas funções tanto de callback a middlewares 

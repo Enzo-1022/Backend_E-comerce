@@ -1,10 +1,10 @@
 import express from "express";
-import middlewareAcessToken from "../middlewares/middlewareAcesstoken.js";
-import ValidacaoIdProduto from "../middlewares/validations/validacaoIdProduto.js";
-import ValidacaoAttInfosProdutos from "../middlewares/validations/validacaoAttInfosProduto.js";
-import { cadastroProdutos, atualizandoProduto } from "../controllers/controllerAdmin.js";
-import middlewareAcessAdminRoute from "../middlewares/middlewareAcessAdminRoute.js";
-import middlewareLimitRate from "../middlewares/middlewareLimitRate.js"
+import middlewareAcessToken from "../middlewares/Acesstoken.middleware.js";
+import ValidacaoIdProduto from "../middlewares/validations/IdProduto.validation.js";
+import ValidacaoAttInfosProdutos from "../middlewares/validations/AttInfosProduto.validation.js";
+import { cadastroProdutos, atualizandoProduto } from "../controllers/Admin.controller.js";
+import middlewareAcessAdminRoute from "../middlewares/AcessAdminRoute.middleware.js";
+import middlewareLimitRate from "../middlewares/LimitRate.middleware.js";
 
 var router = express.Router(); // Instanciando o modulo de Router do Express para gerenciamento/criação das rotas da aplicação
 

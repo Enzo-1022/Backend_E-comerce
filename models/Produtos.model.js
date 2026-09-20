@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 
-import sequelize from '../config/BD.js'
+import sequelize from '../config/BD.config.js'
 
 const Produtos = sequelize.define(
     'Produtos',

@@ -1,8 +1,8 @@
-import sequelize from '../config/BD.js';
-
 import { DataTypes } from 'sequelize';
 
-import Usuarios from '../models/mUsuarios.js';
+import sequelize from '../config/BD.config.js';
+
+import Usuarios from './Usuarios.model.js';
 
 const Logins = sequelize.define(
     'Logins',

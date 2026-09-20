@@ -2,7 +2,7 @@ import { createClient } from "redis";
 
 import { RateLimiterRedis } from "rate-limiter-flexible";
 
-import logger from "./logger.js";
+import logger from "./logger.config.js";
 
 import 'dotenv/config';
 

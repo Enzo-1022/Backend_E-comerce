@@ -1,4 +1,4 @@
-import rateLimiterRedis from "../config/Redis.js";
+import rateLimiterRedis from "../config/Redis.config.js";
 
 export default function middlewareRateLimite(req, res, next) { // Começo da estruturação do middleware que impede varias solicitações de um só ip as rotas.
 

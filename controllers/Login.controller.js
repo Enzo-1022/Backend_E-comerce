@@ -1,19 +1,18 @@
 /*
     Importando os modelos
 */
-import mUsuarios from "../models/mUsuarios.js"; // Modelo de usuarios
-import mLogins from "../models/mLogins.js"; // Modelo de logins
-import mSessoes from "../models/mSessoes.js"; // Modelo de sessôes
-import Sessoes from "../Services/sessoes.js"; // Classe com a Lógica das Sessões
+import mUsuarios from "../models/Usuarios.model.js"; // Modelo de usuarios
+import mLogins from "../models/Logins.model.js"; // Modelo de logins
+import Sessoes from "../Services/Sessoes.service.js"; // Classe com a Lógica das Sessões
 
 import argon2  from "argon2"; // Importando a blibioteca argon2 que estamos utilizando para fazer o hashing das senhas, aqui vamos passa-la como argumento para instanciar a classe service de hashing 
 
 /* 
     Importando as classes de Service
 */
-import sHashing from "../Services/hasing.js"; // Classe Service de Hasshing
-import sUsuarios from "../Services/usuarios.js"; // Classe service Usuarios
-import sLogin from "../Services/login.js"; // Classe service Logins
+import sHashing from "../Services/Hasing.service.js"; // Classe Service de Hasshing
+import sUsuarios from "../Services/Usuarios.service.js"; // Classe service Usuarios
+import sLogin from "../Services/Login.service.js"; // Classe service Logins
 
 /* 
     Instanciando as classes de Service

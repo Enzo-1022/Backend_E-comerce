@@ -1,10 +1,6 @@
-import jwt from 'jsonwebtoken';
-
 import 'dotenv/config';
 
-import mSessoes from '../models/mSessoes.js'; // Modelo de sessôes
-
-import Sessoes from '../Services/sessoes.js'; // Classe de Services das Sessões
+import Sessoes from '../Services/Sessoes.service.js'; // Classe de Services das Sessões
 
 export default async function middlewareSessao(req, res, next) { // Validado para o novo padrão adotado de Autenticação 
   try { 

@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 
-import sequelize from '../config/BD.js'
-import Usuarios from "./mUsuarios.js";
+import sequelize from '../config/BD.config.js'
+import Usuarios from "./Usuarios.model.js";
 
 const Sessoes = sequelize.define(
     'Sessoes',

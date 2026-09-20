@@ -5,14 +5,14 @@ import logger from 'morgan';
 
 import cors from 'cors';
 
-import loggerHttp from './config/loggerHttp.js';
+import loggerHttp from './config/loggerHttp.config.js';
 
-import usuarios from './routes/usuarios.js';
-import indexRouter from './routes/index.js';
-import loginRouter from './routes/login.js';
-import adminRouter from './routes/admin.js';
-import produtosRouter from './routes/produtos.js';
-import authorizationRouter from './routes/authorization.js';
+import usuarios from './routes/Usuarios.route.js';
+import indexRouter from './routes/Index.route.js';
+import loginRouter from './routes/Login.route.js';
+import adminRouter from './routes/Admin.route.js';
+import produtosRouter from './routes/Produtos.route.js';
+import authorizationRouter from './routes/Authorization.route.js';
 
 // const __dirname = path.dirname(__filename);
 

@@ -1,7 +1,6 @@
-import { body, validationResult } from "express-validator";
-import mProdutos from "../models/mProdutos.js";
+import mProdutos from "../models/Produtos.model.js";
 
-import produtos from "../Services/produtos.js";
+import produtos from "../Services/Produtos.service.js";
 
 const Produtos = new produtos(mProdutos);
 

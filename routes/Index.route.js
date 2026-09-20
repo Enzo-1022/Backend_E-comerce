@@ -1,5 +1,5 @@
 import express from "express";
-import middlewareRateLimite from "../middlewares/middlewareLimitRate.js";
+import middlewareRateLimite from "../middlewares/LimitRate.middleware.js";
 
 var router = express.Router();
 
