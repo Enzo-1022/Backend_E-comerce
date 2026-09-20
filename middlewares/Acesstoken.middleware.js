@@ -1,11 +1,9 @@
-import jwt from "jsonwebtoken";
-
 import 'dotenv/config';
 import Sessoes from "../Services/Sessoes.service.js";
 
 export default async function middlewareVerificaAcessToken (req, res, next) { // Middleawre que verifica o acess token
     try {
-        var token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : undefined;
+        var token = req.cookies.acessToken ? req.cookies.acessToken : undefined;
 
         if (token == undefined) 
         {

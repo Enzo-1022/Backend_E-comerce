@@ -7,6 +7,8 @@ import Sessoes from "../Services/Sessoes.service.js"; // Classe com a Lógica da
 
 import argon2  from "argon2"; // Importando a blibioteca argon2 que estamos utilizando para fazer o hashing das senhas, aqui vamos passa-la como argumento para instanciar a classe service de hashing 
 
+import Cookies from "../utils/cookies.util.js";
+
 /* 
     Importando as classes de Service
 */
@@ -210,16 +212,20 @@ export async function login(req, res) { // Validada as implementações do novo 
         }
 
         // Criando o Cookie que armazena o token de sessão.
-        res.cookie( // Reconfigurar para ter segurança nos cookies, permitir que não seja lido por js e só seja enviado por https
-            'sessionToken', // Definindo o nome do Cookie
-            CriandoSessao.Sessao.Token, // Conteudo do Cookie, atribuindo o token de sessão para o cookie
-            {
-                path : '/', // Torna o Cookie acessivel em toda a aplicação 
-                secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado via http
-                httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
-                sameSite : 'lax',
-            }
-        );
+        // res.cookie( // Reconfigurar para ter segurança nos cookies, permitir que não seja lido por js e só seja enviado por https
+        //     'sessionToken', // Definindo o nome do Cookie
+        //     CriandoSessao.Sessao.Token, // Conteudo do Cookie, atribuindo o token de sessão para o cookie
+        //     {
+        //         path : '/', // Torna o Cookie acessivel em toda a aplicação 
+        //         secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado via http
+        //         httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
+        //         sameSite : 'lax',
+        //     }
+        // );
+
+        Cookies.SessionToken(res, CriandoSessao.Sessao.Token);
+
+        Cookies.AcessToken(res, await Sessoes.criaAcessToken(Login[0].Id_Login));
 
         req.log.info(
             {

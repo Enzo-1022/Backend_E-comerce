@@ -6,6 +6,7 @@ import mLogins from '../models/Logins.model.js';
 import sUsuarios from "../Services/Usuarios.service.js";
 import sLogin from "../Services/Login.service.js";
 import Sessoes from '../Services/Sessoes.service.js';
+import Cookies from '../utils/cookies.util.js';
 
 const Login = new sLogin(mLogins, undefined);
 const Usuarios = new sUsuarios(mUsuarios, undefined);
@@ -57,7 +58,7 @@ export async function perfilUsuario (req, res) {
 
         return res.status(200).json(
             {
-                PerfilUsuario: perfilUsuario
+                PerfilUsuario : perfilUsuario
             }
         );
     
@@ -322,16 +323,18 @@ export async function ativarUsuario(req, res) {
             );
         }
 
-        res.cookie(
-            'sessionToken', 
-            criandoSessao.Sessao.Token, 
-            {
-                path : '/',
-                secure : false,
-                httpOnly : false,
-                sameSite : 'lax'
-            }
-        );
+        // res.cookie(
+        //     'sessionToken', 
+        //     criandoSessao.Sessao.Token, 
+        //     {
+        //         path : '/',
+        //         secure : false,
+        //         httpOnly : false,
+        //         sameSite : 'lax'
+        //     }
+        // );
+
+        Cookies.SessionToken(res, criandoSessao.Sessao.Token)
 
         req.log.info(
             {

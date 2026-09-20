@@ -4,7 +4,7 @@ import Sessoes from '../Services/Sessoes.service.js'; // Classe de Services das 
 
 export default async function middlewareSessao(req, res, next) { // Validado para o novo padrão adotado de Autenticação 
   try { 
-    const Token = req.cookies.sessionToken? req.cookies.sessionToken : undefined;
+    const Token = req.cookies.sessionToken ? req.cookies.sessionToken : undefined;
 
     if (Token == undefined) 
     {

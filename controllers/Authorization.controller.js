@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import Sessoes from "../Services/Sessoes.service.js";
-
-const SessionPasword = process.env.PasswordSession;
+import Cookies from '../utils/cookies.util.js';
 
 export default async function AttAcessToken(req, res) { // Callback para atualizar o acess token, antes da requisição chegar a esse callback ela passa por um middleware que verifica o token de sessão (refresh token)
    try {
@@ -18,11 +17,10 @@ export default async function AttAcessToken(req, res) { // Callback para atualiz
                }
           );
 
-          return res.status(200).json(
-               {
-                    'AcessToken': CriandoAcessToken
-               }
-          );
+          // Criando o cookie que envia o acess token através dos cookies da requisição
+          Cookies.AcessToken(res, CriandoAcessToken);
+
+          return res.status(204).end();
 
    } catch (error) {
           req.log.error(
