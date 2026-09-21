@@ -211,18 +211,6 @@ export async function login(req, res) { // Validada as implementações do novo 
             throw new Error(CriandoSessao.Sessao); // Caso a Sessão não tenha sido criada, disparamos um novo erro.
         }
 
-        // Criando o Cookie que armazena o token de sessão.
-        // res.cookie( // Reconfigurar para ter segurança nos cookies, permitir que não seja lido por js e só seja enviado por https
-        //     'sessionToken', // Definindo o nome do Cookie
-        //     CriandoSessao.Sessao.Token, // Conteudo do Cookie, atribuindo o token de sessão para o cookie
-        //     {
-        //         path : '/', // Torna o Cookie acessivel em toda a aplicação 
-        //         secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado via http
-        //         httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
-        //         sameSite : 'lax',
-        //     }
-        // );
-
         Cookies.SessionToken(res, CriandoSessao.Sessao.Token);
 
         Cookies.AcessToken(res, await Sessoes.criaAcessToken(Login[0].Id_Login));

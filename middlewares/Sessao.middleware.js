@@ -3,8 +3,8 @@ import 'dotenv/config';
 import Sessoes from '../Services/Sessoes.service.js'; // Classe de Services das Sessões
 
 export default async function middlewareSessao(req, res, next) { // Validado para o novo padrão adotado de Autenticação 
-  try { 
-    const Token = req.cookies.sessionToken ? req.cookies.sessionToken : undefined;
+  try {
+    const Token = await req.cookies.sessionToken ? req.cookies.sessionToken : undefined;
 
     if (Token == undefined) 
     {

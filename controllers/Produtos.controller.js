@@ -8,7 +8,7 @@ export async function catalogo(req, res) { // Validar
     try {
         const produtos = await Produtos.buscaProdutos(req.PaginaRequerida);
         
-        res.status(200).json(produtos);
+        res.status(200).json({Catalogo : produtos});
 
     } catch (error) {
         req.log.error(

@@ -2,7 +2,7 @@ import { validationResult, body } from "express-validator";
 
 const ValidacaoNumPagina = [ // Validar
 
-    body('Pagina').isInt().withMessage("O Numero Da Pagina Deve Ser Um Inteiro").toInt(),
+    body('Pagina').trim().escape().notEmpty(),
 
     (req, res, next) => {
         try {
