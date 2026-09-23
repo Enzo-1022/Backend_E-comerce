@@ -24,7 +24,6 @@ export default async function middlewareVerificaAcessToken (req, res, next) { //
             return res.status(401).json({Erro: 'Token Expirado'});
         }
 
-        console.error(error);
         return res.status(500).json({Erro: "Erro Interno do Servidor"});
     }
 }

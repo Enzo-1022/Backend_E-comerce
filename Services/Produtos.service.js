@@ -47,14 +47,15 @@ export default class Produtos {
             const produtos = await this.#modeloProduto.findAll(
                 {
                     limit : 15, 
-                    offset : req.PaginaRequerida * 15,
+                    offset : (pNumPagRequirida - 1) * 15,
                     raw : true
                 }
             );
 
             return {
                 produtos : produtos,
-                QtdPaginas : qtdPaginas
+                QtdPaginas : qtdPaginas,
+                paginaEnviada : pNumPagRequirida
             }
 
         } catch (error) {

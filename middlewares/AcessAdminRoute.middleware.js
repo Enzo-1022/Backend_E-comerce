@@ -1,6 +1,6 @@
 export default function middlewareAcessAdminRoute(req, res, next) {
     try {
-        if (req.IsAdim) {
+        if (req.IsAdmin) {
             return next();
         }
 
