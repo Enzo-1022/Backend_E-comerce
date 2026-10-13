@@ -1,36 +1,48 @@
-import mSessoes from "../models/Sessoes.model.js";
-import mLogin from "../models/Logins.model.js";
-import jwt from "jsonwebtoken";
-
 import 'dotenv/config';
 
 const PasswordSession =  process.env.PasswordSession;
 const PasswordAcessToken = process.env.PasswordAcessToken;
+const PasswordTokenReativacao = process.env.PasswordTokenReativacao;
 
 export default class Sessoes {
-    // Token de Sessão
-    static async criaSessao(userId) {
-        return await mSessoes.create(// Criando um novo registro de sessão no banco de dados
+    #mSessoes;
+    #mLogin;
+    #jwt;
+
+    constructor(pMSessoes, pJwt, pMLogin){
+        this.#mSessoes = pMSessoes,
+        this.#mLogin = pMLogin,
+        this.#jwt = pJwt
+    }
+
+    async criaSessao(userId) {
+        return await this.#mSessoes.create(// Criando um novo registro de sessão no banco de dados
             {
                 Id_Usuario : userId,
-                Token : jwt.sign({ Id_Usuario : userId }, PasswordSession, { expiresIn : '7d', algorithm: 'HS256' }) // Criando o token de sessão com JWT
+                Token : this.#jwt.sign({ Id_Usuario : userId }, PasswordSession, { expiresIn : '7d', algorithm: 'HS256' }) // Criando o token de sessão com JWT
             }
         ).then( 
             sessao => {
-                return {SessaoCriada : true, Sessao : sessao.toJSON()}
+                return {
+                    SessaoCriada : true, 
+                    Sessao : sessao.toJSON()
+                }
             }
         ).catch(
             err => {
-                return {SessaoCriada : false, Sessao : err} // Validar o erro
+                return {
+                    SessaoCriada : false, 
+                    Sessao : err
+                } // Validar o erro
             }
         );
     }
 
-    static async verificaSessao(token) {
+    async verificaSessao(token) {
         try {
-            const ValidandoSessiontoken = jwt.verify(token, PasswordSession);
+            const ValidandoSessiontoken = this.#jwt.verify(token, PasswordSession);
 
-            const BuscandoSessao = await mSessoes.findAll(
+            const BuscandoSessao = await this.#mSessoes.findAll(
                 { // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
                     where : {
                         Id_Usuario : ValidandoSessiontoken.Id_Usuario
@@ -55,8 +67,8 @@ export default class Sessoes {
         }  
     }
 
-    static async excluiSessao(userId) {
-        const ExcluindoSessao = await mSessoes.destroy(
+    async excluiSessao(userId) {
+        const ExcluindoSessao = await this.#mSessoes.destroy(
             {
                 where : {
                     Id_Usuario : userId
@@ -70,19 +82,62 @@ export default class Sessoes {
     }
 
     // Acess Token
-    static async criaAcessToken(UserID) {
+    async criaAcessToken(UserID) {
 
-        const Login = await mLogin.findAll({
-            where: {
-                Id_Usuario : UserID
+        const Login = await this.#mLogin.findAll(
+            {
+                where : {
+                    Id_Usuario : UserID
+                },
+                raw : true
+            }
+        );
+
+        return this.#jwt.sign(
+            {
+                Id_Usuario : Login[0]?.Id_Usuario,
+                IsAdmin: Login[0]?.Admin == null ? false : Login[0]?.Admin
             },
-            raw : true
-        });
-
-        return jwt.sign({ Id_Usuario : Login[0]?.Id_Usuario, IsAdmin: Login[0]?.Admin == null ? false : Login[0]?.Admin }, PasswordAcessToken, { expiresIn : '15m' });
+            PasswordAcessToken,
+            {
+                expiresIn : '15m'
+            }
+        );
     }
 
-    static validaAcessToken(token) {
-        return jwt.verify(token, PasswordAcessToken);
+    async validaAcessToken(token) {
+
+        const validando = await this.#jwt.verify(token, PasswordAcessToken);
+
+        const login = await this.#mLogin.findAll(
+            { 
+                where : {
+                    Id_Usuario : validando.Id_Usuario
+                },
+                raw : true 
+            }
+        );
+
+        if (!login[0].Ativo) {
+            throw new Error("Usuario Desativado!", {cause : "Usuario desativado"});
+        }
+
+        return validando;
+    }
+
+    async criaTokenDeReativacao(userID) {
+        return await this.#jwt.sign(
+            {
+                Id_Usuario : userID
+            },
+            PasswordTokenReativacao,
+            {
+                expiresIn : "15m"
+            }
+        );
+    }
+
+    async verificaTokenReativacao(token) {
+        return await this.#jwt.verify(token, PasswordTokenReativacao);
     }
 }

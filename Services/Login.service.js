@@ -62,7 +62,7 @@ export default class Logins {
      * 
      * @param {*} pEmail - Email que será usado como parametro de Busca
      * @returns - Retorna uma instancia do modelo de Login com os dados encontrados na pesquisa/busca, caso de algum erro retorna o erro para que ele seja tratado na proxima cadeia de tratamento de erros
-     */
+    */
     async buscandoLogin(pEmail){
         try {
             const buscandoLogin = await this.#loginModel.findAll(
@@ -85,7 +85,7 @@ export default class Logins {
      * 
      * @param {*} idUser - Id do usuario que será usado como parametro de busca
      * @returns - Retorna uma array com 2 indices o primeiro é o total de linhas afetadas pelo update, o segundo indice é são as linhas afetadas, utilizamos o primeiro indice para validar se o usuário foi realmente desativado. Em caso de erros retornamos um novo erro para a proxima cadeia de tratamento de erros.      
-     */
+    */
     async desativandoLogin(idUser) {
         try {
             const desativandoUsuario = await this.#loginModel.update(
@@ -111,7 +111,7 @@ export default class Logins {
      * 
      * @param {*} idUser - Id do usuário que será usado como parametro de busca
      * @returns -Retorna uma array com 2 indices o primeiro é o total de linhas afetadas pelo update, o segundo indice retrata as linhas afetadas, utilizamos o primeiro indice para validar se o usuário foi realmente desativado. Em caso de erros retornamos um novo erro para a proxima cadeia de tratamento de erros.
-     */
+    */
     async ativandoLogin(idUser) {
         try {
             const ativandoLogin = await this.#loginModel.update(

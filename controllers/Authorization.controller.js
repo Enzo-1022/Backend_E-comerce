@@ -1,6 +1,12 @@
 import 'dotenv/config';
-import Sessoes from "../Services/Sessoes.service.js";
-import Cookies from '../utils/cookies.util.js';
+import sSessoes from "../Services/Sessoes.service.js";
+import mSessoes from "../models/Sessoes.model.js";
+import mLogin from "../models/Logins.model.js";
+import jwt from 'jsonwebtoken';
+
+const Sessoes = new sSessoes(mSessoes, jwt, mLogin);
+
+import Cookies from '../utils/Cookies.util.js';
 
 export default async function AttAcessToken(req, res) { // Callback para atualizar o acess token, antes da requisição chegar a esse callback ela passa por um middleware que verifica o token de sessão (refresh token)
    try {

@@ -2,6 +2,14 @@
  * Classe que centraliza a criação dos cookies 
 */
 export default class Cookies {
+
+    configDosCookies = {
+        path : '/',
+        secure : false,
+        httpOnly : false,
+        sameSite : 'lax'
+    };
+
     /**
      * Método que adiciona há resposta o cookie com o token de acesso
      * 
@@ -39,6 +47,20 @@ export default class Cookies {
                 httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
                 sameSite : 'lax',
             }
+        );
+    }
+
+    /**
+     * Método que adiciona há resposta da requisição o cookie de autenticação para a reativação do perfil do usuário
+     * 
+     * @param {*} res 
+     * @param {*} tokenReativacao 
+    */
+    static ReativacaoToken(res, tokenReativacao) {
+        res.cookie(
+            'tokenDeReativacao',
+            tokenReativacao,
+            this.configDosCookies
         );
     }
 }

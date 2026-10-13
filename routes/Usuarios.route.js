@@ -6,7 +6,7 @@ import { perfilUsuario, atualizaUsuario, desativaUsuario, ativarUsuario } from "
 
 import middlewareAcessToken from "../middlewares/Acesstoken.middleware.js";
 
-import ValidacaoIdUsuario from "../middlewares/validations/IdUsuario.validation.js";
+import middlewareReativacaoToken from "../middlewares/ReativacaoToken.middleware.js";
 
 import ValidacaoAttInfosUsuario from "../middlewares/validations/AttInfosUsuario.validation.js";
 
@@ -28,6 +28,6 @@ router.put('/AtualizarDados', middlewareLimitRate, middlewareAcessToken, Validac
 
 router.patch('/DesativarPerfil', middlewareLimitRate, middlewareAcessToken, desativaUsuario); // Validado 11/03/2026
 
-router.patch('/AtivarPerfil/:Id_Usuario', middlewareLimitRate, ValidacaoIdUsuario, ativarUsuario); // Feito 12/03/2026 falta validar
+router.patch('/AtivarPerfil', middlewareLimitRate, middlewareReativacaoToken, ativarUsuario); // Feito 12/03/2026 falta validar
 
 export default router;

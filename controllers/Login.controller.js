@@ -3,11 +3,12 @@
 */
 import mUsuarios from "../models/Usuarios.model.js"; // Modelo de usuarios
 import mLogins from "../models/Logins.model.js"; // Modelo de logins
-import Sessoes from "../Services/Sessoes.service.js"; // Classe com a Lógica das Sessões
+import sSessoes from "../Services/Sessoes.service.js"; // Classe com a Lógica das Sessões
+import mSessoes from "../models/Sessoes.model.js";
+import jwt from "jsonwebtoken";
+import Cookies from "../utils/Cookies.util.js"
 
 import argon2  from "argon2"; // Importando a blibioteca argon2 que estamos utilizando para fazer o hashing das senhas, aqui vamos passa-la como argumento para instanciar a classe service de hashing 
-
-import Cookies from "../utils/cookies.util.js";
 
 /* 
     Importando as classes de Service
@@ -22,6 +23,7 @@ import sLogin from "../Services/Login.service.js"; // Classe service Logins
 const Hashing = new sHashing(argon2);
 const Logins = new sLogin(mLogins, Hashing);
 const Usuarios = new sUsuarios(mUsuarios, Logins);
+const Sessoes = new sSessoes(mSessoes, jwt, mLogins);
 
 // Adicionar uma validação para caso ocorrer erro em alguma função que faça a inserção no banco, apagar oq ja tinha sido inserido e vise e versa.
 export async function cadastro (req, res) { // Callback para cadastrar um novo usuario
@@ -162,6 +164,9 @@ export async function login(req, res) { // Validada as implementações do novo 
                 }
             );
 
+            // Criando e Adicionando o Token de 
+            Cookies.ReativacaoToken(res, await Sessoes.criaTokenDeReativacao(Login[0].Id_Usuario));
+
             return res.status(403).json(
                 {
                     Erro : {
@@ -231,7 +236,6 @@ export async function login(req, res) { // Validada as implementações do novo 
         return res.status(200).json(
             {
                 IdUsuario : Login[0].Id_Usuario, 
-                AcessToken : await Sessoes.criaAcessToken(Login[0].Id_Login)
             }
         );
 

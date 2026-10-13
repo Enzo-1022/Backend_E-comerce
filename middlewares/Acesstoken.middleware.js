@@ -1,5 +1,9 @@
 import 'dotenv/config';
-import Sessoes from "../Services/Sessoes.service.js";
+import sSessoes from "../Services/Sessoes.service.js";
+import mLogins from "../models/Logins.model.js";
+import jwt from "jsonwebtoken";
+
+const Sessoes = new sSessoes(undefined, jwt, mLogins);
 
 export default async function middlewareVerificaAcessToken (req, res, next) { // Middleawre que verifica o acess token
     try {
@@ -10,7 +14,7 @@ export default async function middlewareVerificaAcessToken (req, res, next) { //
             return res.status(401).json({Erro : `Acess Token Indefinido`});
         }
 
-        const VerificandoToken = Sessoes.validaAcessToken(token);
+        const VerificandoToken = await Sessoes.validaAcessToken(token);
 
         req.userID = VerificandoToken.Id_Usuario;
         req.IsAdmin = VerificandoToken.IsAdmin; // Add pois irei precisar no middleware de roles.
@@ -23,6 +27,7 @@ export default async function middlewareVerificaAcessToken (req, res, next) { //
         {
             return res.status(401).json({Erro: 'Token Expirado'});
         }
+        if (error.name == "Usuario Desativado!") return res.status(403).json({Erro : "Usuario Desativado"})
 
         return res.status(500).json({Erro: "Erro Interno do Servidor"});
     }

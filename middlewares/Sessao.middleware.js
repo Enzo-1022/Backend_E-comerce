@@ -1,6 +1,14 @@
 import 'dotenv/config';
 
-import Sessoes from '../Services/Sessoes.service.js'; // Classe de Services das Sessões
+import sSessoes from '../Services/Sessoes.service.js'; // Classe de Services das Sessões
+
+import mSessoes from "../models/Sessoes.model.js";
+
+import mLogins from "../models/Logins.model.js";
+
+import jwt from "jsonwebtoken";
+
+const Sessoes = new sSessoes(mSessoes, jwt, mLogins);
 
 export default async function middlewareSessao(req, res, next) { // Validado para o novo padrão adotado de Autenticação 
   try {

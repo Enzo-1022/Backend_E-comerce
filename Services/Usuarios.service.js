@@ -29,7 +29,10 @@ export default class Usuarios {
 
             const novoLogin = await this.#serviceLogin.cadastroLogin(novoUsuario.Id_Usuario, pEmail, pSenha);
 
-            return {novoUsuario, novoLogin};
+            return {
+                novoUsuario, 
+                novoLogin
+            };
         } catch (error) {
             throw new Error(error);
         }
