@@ -76,6 +76,7 @@ export default class Sessoes {
             }
         ); 
 
+        console.log("Sessao Excluida Abaixo: ")
         console.log(ExcluindoSessao); // Adicionar Uma Biblioteca de Logs para termos um registro para auditoria dessas exclusões, operações sensiveis no BD merecem um tratamento de logs para auditoria.
 
         return ExcluindoSessao; // utilizando o método destroy o sequelize retorna a quantidade de registros excluidos, aqui estamos retornando para caso eu precise de alguma validação ao decorrer da aplicação

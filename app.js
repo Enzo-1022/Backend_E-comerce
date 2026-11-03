@@ -1,5 +1,4 @@
 import express from 'express';
-// import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
@@ -13,8 +12,6 @@ import loginRouter from './routes/Login.route.js';
 import adminRouter from './routes/Admin.route.js';
 import produtosRouter from './routes/Produtos.route.js';
 import authorizationRouter from './routes/Authorization.route.js';
-
-// const __dirname = path.dirname(__filename);
 
 // Instaciando o objeto express  para setarmos as rotas e os midlewares, dps o exportamos para o arquivo bin/www nele é aonde o server é configurado e ligado
 var app = express();

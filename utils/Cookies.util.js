@@ -4,10 +4,10 @@
 export default class Cookies {
 
     configDosCookies = {
-        path : '/',
-        secure : false,
-        httpOnly : false,
-        sameSite : 'lax'
+        path : '/', // Torna o Cookie acessivel em toda a aplicação
+        secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado via http
+        httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
+        sameSite : 'lax' // Lax deixa o cookie acessivel para urls diferentes da nossa mesma
     };
 
     /**
@@ -20,12 +20,7 @@ export default class Cookies {
         res.cookie(
             'acessToken', // Definindo o nome do Cookie
             acessToken, // Conteudo do Cookie, atribuindo o token de sessão para o cookie
-            {
-                path : '/', // Torna o Cookie acessivel em toda a aplicação 
-                secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado via http
-                httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
-                sameSite : 'lax',
-            }
+            this.configDosCookies
         );
 
         return;
@@ -41,12 +36,7 @@ export default class Cookies {
         res.cookie(
             'sessionToken', // Definindo o nome do Cookie
             sessionToken, // Conteudo do Cookie, atribuindo o token de sessão para o cookie
-            {
-                path : '/', // Torna o Cookie acessivel em toda a aplicação 
-                secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado via http
-                httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
-                sameSite : 'lax',
-            }
+            this.configDosCookies
         );
     }
 
@@ -62,5 +52,18 @@ export default class Cookies {
             tokenReativacao,
             this.configDosCookies
         );
+    }
+
+    /**
+     * 
+     * @param {*} res 
+     * @returns 
+     */
+    static ApagaCookiesSessao(res) {
+        res.clearCookie("sessionToken");
+        res.clearCookie("acessToken");
+
+        return;
+
     }
 }

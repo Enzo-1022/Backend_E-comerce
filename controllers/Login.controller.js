@@ -16,6 +16,8 @@ import argon2  from "argon2"; // Importando a blibioteca argon2 que estamos util
 import sHashing from "../Services/Hasing.service.js"; // Classe Service de Hasshing
 import sUsuarios from "../Services/Usuarios.service.js"; // Classe service Usuarios
 import sLogin from "../Services/Login.service.js"; // Classe service Logins
+import Logger from "../utils/Logger.util.js";
+import JsonRes from "../utils/JsonRes.util.js";
 
 /* 
     Instanciando as classes de Service
@@ -263,3 +265,19 @@ export async function login(req, res) { // Validada as implementações do novo 
     }
 }
 // 12/07/2026 - Adicionei os Logs e refatorei as respostas, retirei toda a lógica do bd para os service de Usuarios e Logins
+
+export async function logoff(req, res) {
+    try {
+
+        await Sessoes.excluiSessao(req.userID);
+
+        Cookies.ApagaCookiesSessao(res);
+
+        return res.status(200).end();
+
+    } catch (error) { // Testar essa seção pois fiz as classes de padronização dos logs de erro e de resposta de erro 500
+        Logger.logError(req, "LOGOFF", error);
+
+        return res.status(500).json(JsonRes.resError("Erro Interno do Servidor", "Um erro inesperado aconteceu ao tentar realizar o LogOff", req.id));
+    }
+}
