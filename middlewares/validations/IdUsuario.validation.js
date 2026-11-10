@@ -10,7 +10,7 @@ const ValidacaoIdUsuario = [
 
             if (!Errors.isEmpty()) 
             {
-                return res.status(400).json({Erro : `Parametro de Rota Invalido ${Errors[0]}`});
+                return res.status(400).json({Erro : `Parametro de Rota Invalido ${Errors.array()}`});
             }
 
             req.userID = req.params.Id_Usuario;

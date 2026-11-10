@@ -8,7 +8,7 @@ export default async function ReativacaoToken(req, res, next) {
         const Token = req.cookies.tokenDeReativacao ? req.cookies.tokenDeReativacao : undefined;
 
         if (!Token) {
-            res.status(401).json({Erro : "Token de Reativação Inspirado!"});
+            return res.status(401).json({Erro : "Token de Reativação Inspirado!"});
         }
 
         const Validando = await Sessoes.verificaTokenReativacao(Token);

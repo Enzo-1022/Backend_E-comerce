@@ -72,7 +72,7 @@ export async function produto(req, res){
 
     } catch (error) {
 
-        res.log.error(
+        req.log.error(
             {
                 Acao : "BUSCAR_PRODUTO",
                 Status : "ERRO",

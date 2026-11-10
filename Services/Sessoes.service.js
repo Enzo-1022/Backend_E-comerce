@@ -39,32 +39,26 @@ export default class Sessoes {
     }
 
     async verificaSessao(token) {
-        try {
-            const ValidandoSessiontoken = this.#jwt.verify(token, PasswordSession);
+        const ValidandoSessiontoken = this.#jwt.verify(token, PasswordSession);
 
-            const BuscandoSessao = await this.#mSessoes.findAll(
-                { // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
-                    where : {
-                        Id_Usuario : ValidandoSessiontoken.Id_Usuario
-                    },
-                    raw : true
-                }
-            );
-
-            if (!BuscandoSessao.length) {
-                throw new Error("Nenhuma Sessão Encontrada");
+        const BuscandoSessao = await this.#mSessoes.findAll(
+            { // Buscando se já existe uma sessão ativa para o usuario que está tentando logar
+                where : {
+                    Id_Usuario : ValidandoSessiontoken.Id_Usuario
+                },
+                raw : true
             }
+        );
 
-            if(BuscandoSessao[0].Token != token){
-                throw new Error("Token Divergente");
-            }
+        if (!BuscandoSessao.length) {
+            throw new Error("Nenhuma Sessão Encontrada");
+        }
 
-            return {SessaoValida : true, UserID : ValidandoSessiontoken.Id_Usuario};
+        if(BuscandoSessao[0].Token != token){
+            throw new Error("Token Divergente");
+        }
 
-        } catch (error) {
-            console.error(error);
-            return {SessaoValida : false, UserID : null};
-        }  
+        return {SessaoValida : true, UserID : ValidandoSessiontoken.Id_Usuario};
     }
 
     async excluiSessao(userId) {

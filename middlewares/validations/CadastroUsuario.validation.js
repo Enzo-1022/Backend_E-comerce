@@ -12,7 +12,7 @@ const ValidacaoCadastroUsuario = [
             const Errors = validationResult(req);
 
             if (!Errors.isEmpty()) {
-                return res.status(400).json({Erro : Errors[0]});
+                return res.status(400).json({Erro : Errors.array()});
             }
 
             req.Email = req.body.Email;

@@ -10,7 +10,7 @@ const ValidacaoAttInfosUsuario = [
             const Errors = validationResult(req);
 
             if (!Errors.isEmpty()) {
-                return res.status(400).json({Erro: Errors[0]});
+                return res.status(400).json({Erro: Errors.array()});
             }
 
             req.Cpf = req.body.Cpf;

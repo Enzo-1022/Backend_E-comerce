@@ -23,7 +23,7 @@ export default async function middlewareVerificaAcessToken (req, res, next) { //
 
     } catch (error) {
 
-        if (error.name == "TokenExpiredError") 
+        if (error.message == "TokenExpiredError") 
         {
             return res.status(401).json({Erro: 'Token Expirado'});
         }

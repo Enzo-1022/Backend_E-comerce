@@ -18,6 +18,7 @@ import sUsuarios from "../Services/Usuarios.service.js"; // Classe service Usuar
 import sLogin from "../Services/Login.service.js"; // Classe service Logins
 import Logger from "../utils/Logger.util.js";
 import JsonRes from "../utils/JsonRes.util.js";
+import sequelize from "../config/BD.config.js";
 
 /* 
     Instanciando as classes de Service
@@ -29,6 +30,8 @@ const Sessoes = new sSessoes(mSessoes, jwt, mLogins);
 
 // Adicionar uma validação para caso ocorrer erro em alguma função que faça a inserção no banco, apagar oq ja tinha sido inserido e vise e versa.
 export async function cadastro (req, res) { // Callback para cadastrar um novo usuario
+    const transacao = await sequelize.transaction(); // Iniciando um nova transação, vamos usar o método de transação que é presente no Mysql para caso aconteça algum erro durante as inserções no banco de dados, possamos reverter a criação dos registros 
+
     try {
         const VerificaCpf = await Usuarios.verificaCpf(req.Cpf);
 
@@ -82,7 +85,7 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
             );
         }
 
-        const CriandoUsuario = await Usuarios.cadastroUsuario(req.Nome, req.Data_Nascimento, req.Cpf, req.Email, req.Senha);
+        const CriandoUsuario = await Usuarios.cadastroUsuario(req.Nome, req.Data_Nascimento, req.Cpf, req.Email, req.Senha, transacao);
 
         req.log.info(
             {
@@ -94,9 +97,14 @@ export async function cadastro (req, res) { // Callback para cadastrar um novo u
             }
         );
 
+        await transacao.commit();
+
         return res.status(201).end(); // Repondendo a requisição com um status 201, informando que foi criado com sucesso o novo usuario.
 
     } catch (error) { // Existe um erro de usabilidade: caso aconteça algum erro durante a execução do segundo registro (O de Login, que cria o login para que o usuário possa se autenticar e entrar na aplicação) no banco de dados, o usuário terá seu cadastro na tabela de usuários registrado mas na de login não, assim o usuário não consegue se cadastrar dnv pois o seu cpf ja está cadastrado mas tbm não consegue fazer o login pois não há o seu registro dentro da tabela de logins, pensar em uma solução para esse erro 
+        
+        await transacao.rollback()
+        
         req.log.error(
             {
                 Acao : "CADASTRO_USUARIO",
@@ -150,36 +158,6 @@ export async function login(req, res) { // Validada as implementações do novo 
                 }
             );
         }
-
-        if (!Login[0].Ativo) { // Validando se o usuário está com a conta ativa
-
-            req.log.error(
-                {
-                    Acao : "LOGIN",
-                    Status : "ERRO",
-                    Erro : {
-                        Titulo : "Usuario não está Ativo",
-                        Detalhes : `O Usuario ${Login[0].Id_Usuario}, não está ativo`,
-                        Id_Usuario : Login[0].Id_Usuario,
-                        ReqID : req.id
-                    }
-                }
-            );
-
-            // Criando e Adicionando o Token de 
-            Cookies.ReativacaoToken(res, await Sessoes.criaTokenDeReativacao(Login[0].Id_Usuario));
-
-            return res.status(403).json(
-                {
-                    Erro : {
-                        Titulo : "Não autorizado, Usuario desativado!",
-                        Detalhes : "O Usuario não está ativo",
-                        ReqID : req.id
-                    }, 
-                    IdUsuario :  Login[0].Id_Usuario
-                }
-            );
-        }
         
         if(!await Hashing.verificaHash(Login[0].Senha, req.Senha)) { // Verifica Senha
             req.log.error(
@@ -205,6 +183,35 @@ export async function login(req, res) { // Validada as implementações do novo 
             );
         }
 
+        if (!Login[0].Ativo) { // Validando se o usuário está com a conta ativa
+
+            req.log.error(
+                {
+                    Acao : "LOGIN",
+                    Status : "ERRO",
+                    Erro : {
+                        Titulo : "Usuario não está Ativo",
+                        Detalhes : `O Usuario ${Login[0].Id_Usuario}, não está ativo`,
+                        Id_Usuario : Login[0].Id_Usuario,
+                        ReqID : req.id
+                    }
+                }
+            );
+
+            // Criando e Adicionando o Token de Reativação
+            Cookies.ReativacaoToken(res, await Sessoes.criaTokenDeReativacao(Login[0].Id_Usuario));
+
+            return res.status(403).json(
+                {
+                    Erro : {
+                        Titulo : "Não autorizado, Usuario desativado!",
+                        Detalhes : "O Usuario não está ativo",
+                        ReqID : req.id
+                    }, 
+                    IdUsuario :  Login[0].Id_Usuario
+                }
+            );
+        }
         // Caso a senha e todos os dados de login forem corretos podemos prosseguir para a criação dos tokens de sessão e o acess token
 
         // Primeiro apagamos os dados da tabela de sessão, é uma tabela que estou utilizando para guardar o token de sessao para poder compara-lo e ter mais uma referencia da sessão ao usuário
@@ -220,7 +227,7 @@ export async function login(req, res) { // Validada as implementações do novo 
 
         Cookies.SessionToken(res, CriandoSessao.Sessao.Token);
 
-        Cookies.AcessToken(res, await Sessoes.criaAcessToken(Login[0].Id_Login));
+        Cookies.AcessToken(res, await Sessoes.criaAcessToken(Login[0].Id_Usuario));
 
         req.log.info(
             {
@@ -254,6 +261,8 @@ export async function login(req, res) { // Validada as implementações do novo 
             }
         );
 
+        Logger.logError(req, "LOGIN", error)
+
         return res.status(500).json(
             {
                 Erro : {
@@ -278,6 +287,23 @@ export async function logoff(req, res) {
     } catch (error) { // Testar essa seção pois fiz as classes de padronização dos logs de erro e de resposta de erro 500
         Logger.logError(req, "LOGOFF", error);
 
-        return res.status(500).json(JsonRes.resError("Erro Interno do Servidor", "Um erro inesperado aconteceu ao tentar realizar o LogOff", req.id));
+        return res.status(500).json(JsonRes.resError("LogOff", req.id));
+    }
+}
+
+export async function roleUsuario(req, res) {
+    try {
+        const buscandoLogin = await Logins.buscandoLoginPeloUserId(req.userID);
+
+        return res.status(200).json(
+            {
+                isAdmin : buscandoLogin[0].Admin
+            }
+        );
+
+    } catch (error) {
+        Logger.logError(req, "ROLE_TYPE", error);
+
+        res.status(500).json(JsonRes.resError("ROLE_USUARIO", req.id));
     }
 }

@@ -27,7 +27,7 @@ export default class Logger {
     static logError(pReq, pAcao, pDetalhes) {
         const novoLogger = new Logger(pAcao, pDetalhes);
 
-        pReq.log.error(novoLogger.configLogger);
+        pReq.log.error(novoLogger.configLoggerErro500);
 
         return;
     }

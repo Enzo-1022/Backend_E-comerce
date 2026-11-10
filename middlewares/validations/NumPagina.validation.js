@@ -10,7 +10,7 @@ const ValidacaoNumPagina = [ // Validar
 
             if (!Errors.isEmpty()) 
             {
-                return res.status(400).json({Erro: Errors[0]});// Validar oque realmente validationResult retorna    
+                return res.status(400).json({Erro: Errors.array()});// Validar oque realmente validationResult retorna    
             }
 
             req.PaginaRequerida = req.body.Pagina;

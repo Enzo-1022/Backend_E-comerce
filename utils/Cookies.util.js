@@ -3,7 +3,7 @@
 */
 export default class Cookies {
 
-    configDosCookies = {
+    static configDosCookies = {
         path : '/', // Torna o Cookie acessivel em toda a aplicação
         secure : false, //Isso faz com que o cookie so seja enviado atraves de uma requisição https, se true, se false o cookie pode ser enviado via http
         httpOnly : false, //Dps nos muda para true pois isso evita que o cookie seja acessivel via JS
@@ -38,6 +38,8 @@ export default class Cookies {
             sessionToken, // Conteudo do Cookie, atribuindo o token de sessão para o cookie
             this.configDosCookies
         );
+
+        return;
     }
 
     /**
@@ -52,6 +54,8 @@ export default class Cookies {
             tokenReativacao,
             this.configDosCookies
         );
+
+        return;
     }
 
     /**
@@ -64,6 +68,5 @@ export default class Cookies {
         res.clearCookie("acessToken");
 
         return;
-
     }
 }

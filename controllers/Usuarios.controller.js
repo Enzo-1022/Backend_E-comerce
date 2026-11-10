@@ -113,7 +113,7 @@ export async function atualizaUsuario (req, res) {
                 }
             );
 
-            return res.json(500).json(
+            return res.status(500).json(
                 {
                     Erro : {
                         Titulo : `Erro ao tentar atualizar as informações do usuario ${req.userID}`,

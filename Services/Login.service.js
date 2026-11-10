@@ -15,23 +15,21 @@ export default class Logins {
      * @param {*} pSenha - Senha do Usuario 
      * @returns {*} - Obejeto do cadastro do Usuario
      */
-    async cadastroLogin(pIdUsuario, pEmail, pSenha) {
-        try {
-            const cadastrandoLogin = await this.#loginModel.create(
-                {
-                    Id_Usuario : pIdUsuario,
-                    Email : pEmail,
-                    Senha : await this.#serviceHashing.criandoHash(pSenha),
-                    Admin : false,
-                    ativo: true
-                }
-            );
-    
-            return cadastrandoLogin;
-            
-        } catch (error) {
-            throw new Error(error);
-        }
+    async cadastroLogin(pIdUsuario, pEmail, pSenha, pTransacao) {
+        const cadastrandoLogin = await this.#loginModel.create(
+            {
+                Id_Usuario : pIdUsuario,
+                Email : pEmail,
+                Senha : await this.#serviceHashing.criandoHash(pSenha),
+                Admin : false,
+                ativo: true
+            },
+            {
+                transaction : pTransacao
+            }
+        );
+
+        return cadastrandoLogin;
     }
 
     /**
@@ -41,20 +39,15 @@ export default class Logins {
      * @returns {*} - O Resultado da consulta será um numero referente a contagem dos registros encontrados. se houver um erro durante o processo, retornamos o erro.
      */
     async verificaEmail(pEmail) {
-        try {
-            const buscandoEmail = this.#loginModel.count(
-                {
-                    where : {
-                        Email : pEmail
-                    }
+        const buscandoEmail = this.#loginModel.count(
+            {
+                where : {
+                    Email : pEmail
                 }
-            )
-    
-            return buscandoEmail;
-            
-        } catch (error) {
-            throw new Error(error);
-        }
+            }
+        )
+
+        return buscandoEmail;
     }
 
     /**
@@ -64,20 +57,16 @@ export default class Logins {
      * @returns - Retorna uma instancia do modelo de Login com os dados encontrados na pesquisa/busca, caso de algum erro retorna o erro para que ele seja tratado na proxima cadeia de tratamento de erros
     */
     async buscandoLogin(pEmail){
-        try {
-            const buscandoLogin = await this.#loginModel.findAll(
-                {
-                    where : {
-                        Email : pEmail
-                    },
-                    raw : true // Utilizando o método raw como true o sequelize nos traz apenas os dados buscados diretamente do banco sem os metadados que o sequelize traz com o findall com raw: false
-                }
-            );
+        const buscandoLogin = await this.#loginModel.findAll(
+            {
+                where : {
+                    Email : pEmail
+                },
+                raw : true // Utilizando o método raw como true o sequelize nos traz apenas os dados buscados diretamente do banco sem os metadados que o sequelize traz com o findall com raw: false
+            }
+        );
 
-            return buscandoLogin;
-        } catch (error) {
-            throw new Error(error);
-        }
+        return buscandoLogin;
     }
 
     /**
@@ -87,23 +76,18 @@ export default class Logins {
      * @returns - Retorna uma array com 2 indices o primeiro é o total de linhas afetadas pelo update, o segundo indice é são as linhas afetadas, utilizamos o primeiro indice para validar se o usuário foi realmente desativado. Em caso de erros retornamos um novo erro para a proxima cadeia de tratamento de erros.      
     */
     async desativandoLogin(idUser) {
-        try {
-            const desativandoUsuario = await this.#loginModel.update(
-                {
-                    Ativo : false
-                },
-                {
-                    where : {
-                        Id_Usuario : idUser
-                    }
+        const desativandoUsuario = await this.#loginModel.update(
+            {
+                Ativo : false
+            },
+            {
+                where : {
+                    Id_Usuario : idUser
                 }
-            );
+            }
+        );
 
-            return desativandoUsuario;
-
-        } catch (error) {
-            throw new Error(error);
-        }
+        return desativandoUsuario;
     }
 
     /**
@@ -113,23 +97,36 @@ export default class Logins {
      * @returns -Retorna uma array com 2 indices o primeiro é o total de linhas afetadas pelo update, o segundo indice retrata as linhas afetadas, utilizamos o primeiro indice para validar se o usuário foi realmente desativado. Em caso de erros retornamos um novo erro para a proxima cadeia de tratamento de erros.
     */
     async ativandoLogin(idUser) {
-        try {
-            const ativandoLogin = await this.#loginModel.update(
-                {
-                    Ativo : true
-                },
-                {
-                    where : {
-                        Id_Usuario : idUser
-                    }
+        const ativandoLogin = await this.#loginModel.update(
+            {
+                Ativo : true
+            },
+            {
+                where : {
+                    Id_Usuario : idUser
                 }
-            );
+            }
+        );
 
-            return ativandoLogin;
-
-        } catch (error) {
-            throw new Error(error);
-        }
+        return ativandoLogin;
     }
 
+    /**
+     * Método que busca o registro de login de um usuário pelo id do Usuario.
+     * 
+     * @param {*} pUserID - Id do Usuario para buscarmos o seu Login
+     * @returns Json com os dados do Login do Usuário, caso aconteça algum erro retornamos o erro para a proxima cadeia de tratamento
+    */
+    async buscandoLoginPeloUserId(pUserID){
+        const buscandoLogin = await this.#loginModel.findAll(
+            {
+                where : {
+                    Id_Usuario : pUserID
+                },
+                raw : true
+            }
+        );
+
+        return buscandoLogin;
+    }
 }

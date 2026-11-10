@@ -7,14 +7,13 @@ export default class JsonRes {
 
     /**
      * 
-     * @param {*} pTitulo 
-     * @param {*} pDetalhes 
+     * @param {*} pAcao
      * @param {*} pReqId 
     */
-    constructor(pTitulo, pDetalhes, pReqId){
+    constructor(pAcao, pReqId){
         this.ResError = {
-            Titulo : pTitulo,
-            Detalhes : pDetalhes
+            Titulo : "Erro Interno do Servidor",
+            Detalhes : `Um erro inesperado ocorreu ao tentar realizar a ação de ${pAcao}`
         };
         this.reqId = pReqId;
     }
@@ -34,9 +33,9 @@ export default class JsonRes {
     /**
      * 
     */
-    static resError(pTitulo, pDetalhes, pReqId) {
-        const novaRes = new JsonRes(pStatus, pTitulo, pDetalhes, pReqId);
+    static resError(pAcao, pReqId) {
+        const novaRes = new JsonRes(pAcao, pReqId);
 
-        return novaRes.construindoRes()
+        return novaRes.construindoRes();
     } 
 }
